@@ -305,7 +305,7 @@ public class GameLoop implements Killable, Runnable
      */
     public long getIntervalCorrection()
     {
-        return intervalCorrection;
+        return this.intervalCorrection;
     }
 
     /**
@@ -360,11 +360,8 @@ public class GameLoop implements Killable, Runnable
         // the JVM nano time of the previous iteration
         long lastNanoTime = currentNanoTime;
 
-        // the scheduled JVM nano time of the next render call
-        long nextRenderCall = currentNanoTime;
-
-        // the scheduled JVM nano time of the next tick call
-        long nextTickCall = currentNanoTime;
+        // accumulated delta between render calls
+        long renderDeltaSum = 0;
 
         // accumulated delta between tick calls
         long tickDeltaSum = 0;
@@ -385,36 +382,34 @@ public class GameLoop implements Killable, Runnable
         {
             // wait until the next action
             // either tick or render
-            currentNanoTime = sync(Math.min(nextRenderCall, nextTickCall));
+            currentNanoTime = sync(Math.min(this.tickInterval - tickDeltaSum, this.renderInterval - renderDeltaSum));
 
             // calculate delta to last iteration
             nanoDelta = currentNanoTime - lastNanoTime;
 
             lastNanoTime = currentNanoTime;
             tickDeltaSum += nanoDelta;
+            renderDeltaSum += nanoDelta;
             rateCheckDeltaSum += nanoDelta;
 
             // check if tick call has to be executed
-            if (currentNanoTime >= nextTickCall)
+            if (tickDeltaSum >= this.tickInterval)
             {
-                // convert nanoDelta to seconds
+                // convert tickDeltaSum to seconds
                 this.delta = (double)tickDeltaSum / GameLoop.NANO_TO_BASE;
                 tickDeltaSum = 0;
 
-                // call tick method and schedule next tick call
                 runTick(this.delta);
-                nextTickCall = currentNanoTime + this.tickInterval;
 
                 // increment ticks for a later check if ticks per second are met
                 ticks++;
             }
 
             // check if render call has to be executed
-            if (currentNanoTime >= nextRenderCall)
+            if (renderDeltaSum >= this.renderInterval)
             {
-                // call render method and schedule next render call
                 runRender();
-                nextRenderCall = currentNanoTime + this.renderInterval;
+                renderDeltaSum = 0;
 
                 // increment frames for a later check if frames per second are met
                 frames++;
@@ -467,11 +462,11 @@ public class GameLoop implements Killable, Runnable
     }
 
     /**
-     * Sleeps until the target JVM nano time has been reached.
+     * Sleeps until the given amount of nano seconds has passed.
      *
-     * @param target The JVM nano time that should be reached.
+     * @param target The nano time that should be waited.
      *
-     * @return The current nano time after the target has been reached.
+     * @return The current nano time after the time has passed has been reached.
      *
      * @author Lukas Hartwig
      * @since 30.10.2021
@@ -479,11 +474,21 @@ public class GameLoop implements Killable, Runnable
     protected long sync(long target)
     {
         long current = 0;
-        ThrowRunnable sleep = () -> Thread.sleep(1);
 
-        while ((current = System.nanoTime()) < target)
+        // do we need to wait at all?
+        if (target > 0)
         {
-            Exceptions.ignoreThrow(sleep);
+            long start = System.nanoTime();
+            ThrowRunnable sleep = () -> Thread.sleep(1);
+
+            while ((current = System.nanoTime()) - start < target)
+            {
+                Exceptions.ignoreThrow(sleep);
+            }
+        }
+        else
+        {
+            current = System.nanoTime();
         }
 
         return current;
