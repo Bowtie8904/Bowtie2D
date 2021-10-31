@@ -80,6 +80,12 @@ public class GameLoop implements Killable, Runnable
     protected double delta = 0;
 
     /**
+     * The amount of nano seconds that will be added or subtracted from the tick/render interval for each
+     * frame/tick per second difference to the desired value.
+     */
+    protected long intervalCorrection = 10000;
+
+    /**
      * The set tick consumer that receives the delta seconds since the last tick.
      */
     protected Consumer<Double> tick;
@@ -289,6 +295,34 @@ public class GameLoop implements Killable, Runnable
     }
 
     /**
+     * Gets the amount of nano seconds that will be added or subtracted from the tick/render interval for each
+     * frame/tick per second difference to the desired value.
+     *
+     * @return The correction amount in nano seconds.
+     *
+     * @author Lukas Hartwig
+     * @since 31.10.2021
+     */
+    public long getIntervalCorrection()
+    {
+        return intervalCorrection;
+    }
+
+    /**
+     * Sets the amount of nano seconds that will be added or subtracted from the tick/render interval for each
+     * frame/tick per second difference to the desired value.
+     *
+     * @param intervalCorrection The correction amount in nano seconds.
+     *
+     * @author Lukas Hartwig
+     * @since 31.10.2021
+     */
+    public void setIntervalCorrection(long intervalCorrection)
+    {
+        this.intervalCorrection = intervalCorrection;
+    }
+
+    /**
      * Runs the render runnable if it is not null.
      *
      * @author Lukas Hartwig
@@ -313,7 +347,7 @@ public class GameLoop implements Killable, Runnable
     /**
      * The core of the GameLoop class containing the actual loop which calls tick and render methods.
      * <p>
-     * This method will loop until {@link #running} is set to false (i.e. via a kall to {@link #kill()}.
+     * This method will loop until {@link #running} is set to false (i.e. via a call to {@link #kill()}.
      *
      * @author Lukas Hartwig
      * @since 30.10.2021
@@ -408,7 +442,7 @@ public class GameLoop implements Killable, Runnable
 
     /**
      * Calculates the difference between the current ticks per second and the desired ticks per second.
-     * If there is a difference then the tick interval is adjusted slightly in an attempt to remove the gap.
+     * If there is a difference then the tick interval is adjusted by ({@link #intervalCorrection} * tick difference) in an attempt to remove the gap.
      *
      * @author Lukas Hartwig
      * @since 30.10.2021
@@ -416,12 +450,12 @@ public class GameLoop implements Killable, Runnable
     protected void adjustTickInterval()
     {
         long tickDiff = this.currentTicksPerSecond - this.desiredTicksPerSecond;
-        this.tickInterval += tickDiff * 10000;
+        this.tickInterval += tickDiff * this.intervalCorrection;
     }
 
     /**
      * Calculates the difference between the current frames per second and the desired frames per second.
-     * If there is a difference then the render interval is adjusted slightly in an attempt to remove the gap.
+     * If there is a difference then the render interval is adjusted by ({@link #intervalCorrection} * frame difference) in an attempt to remove the gap.
      *
      * @author Lukas Hartwig
      * @since 30.10.2021
@@ -429,7 +463,7 @@ public class GameLoop implements Killable, Runnable
     protected void adjustRenderInterval()
     {
         long frameDiff = this.currentFramesPerSecond - this.desiredFramesPerSecond;
-        this.renderInterval += frameDiff * 10000;
+        this.renderInterval += frameDiff * this.intervalCorrection;
     }
 
     /**
