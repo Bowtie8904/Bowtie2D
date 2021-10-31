@@ -464,24 +464,24 @@ public class GameLoop implements Killable, Runnable
     /**
      * Sleeps until the given amount of nano seconds has passed.
      *
-     * @param target The nano time that should be waited.
+     * @param duration The nano time that should be waited.
      *
-     * @return The current nano time after the time has passed has been reached.
+     * @return The current nano time after the target duration has passed.
      *
      * @author Lukas Hartwig
      * @since 30.10.2021
      */
-    protected long sync(long target)
+    protected long sync(long duration)
     {
         long current = 0;
 
         // do we need to wait at all?
-        if (target > 0)
+        if (duration > 0)
         {
             long start = System.nanoTime();
             ThrowRunnable sleep = () -> Thread.sleep(1);
 
-            while ((current = System.nanoTime()) - start < target)
+            while ((current = System.nanoTime()) - start < duration)
             {
                 Exceptions.ignoreThrow(sleep);
             }
