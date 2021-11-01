@@ -8,11 +8,6 @@
     <artifactId>Bowtie2D</artifactId>
     <version>0.1</version>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-    </properties>
-
     <build>
         <sourceDirectory>src</sourceDirectory>
         <plugins>
@@ -28,6 +23,7 @@
             <plugin>  <!-- Create sources.jar -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
