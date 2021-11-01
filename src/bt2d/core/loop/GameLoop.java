@@ -493,4 +493,17 @@ public class GameLoop implements Killable, Runnable
 
         return current;
     }
+
+    /**
+     * Indicates whether this loop has been started and is currently running.
+     *
+     * @return True if the loop is running, false otherwise.
+     *
+     * @author Lukas Hartwig
+     * @since 01.11.2021
+     */
+    public boolean isRunning()
+    {
+        return this.running;
+    }
 }
