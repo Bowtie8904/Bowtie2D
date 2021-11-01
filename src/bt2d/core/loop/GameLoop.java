@@ -157,7 +157,7 @@ public class GameLoop implements Killable, Runnable
      * </p>
      *
      * @author Lukas Hartwig
-     * @see bt.runtime.Killable#kill()
+     * @see bt.types.Killable#kill()
      * @since 28.10.2021
      */
     @Override
