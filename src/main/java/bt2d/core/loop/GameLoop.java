@@ -5,6 +5,7 @@ import bt.types.Killable;
 import bt.utils.Exceptions;
 import bt.utils.Null;
 import bt.utils.ThrowRunnable;
+import main.java.bt2d.core.loop.Bla;
 
 import java.util.function.Consumer;
 
@@ -126,6 +127,7 @@ public class GameLoop implements Killable, Runnable
         setTickRate(60);
         setRateChecksPerSecond(10);
         InstanceKiller.killOnShutdown(this, 1);
+        System.out.println(new Bla());
     }
 
     /**
