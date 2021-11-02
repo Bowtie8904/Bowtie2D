@@ -5,7 +5,6 @@ import bt2d.core.container.exc.GameContainerException;
 import bt2d.core.container.settings.GameContainerSettings;
 import bt2d.core.loop.GameLoop;
 import bt2d.core.window.Window;
-import bt2d.utils.Timer;
 import bt2d.utils.Unit;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -15,24 +14,46 @@ import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
- * The type Game container.
+ * The core of a game.
+ * <p>
+ * Contains the central tick and render methods, holds a reference to the game window and manages scenes.
  *
  * @author Lukas Hartwig
  * @since 01.11.2021
  */
 public class GameContainer implements Runnable, Killable
 {
+    /**
+     * The loop that calls this containers tick and render methods.
+     */
     protected GameLoop loop;
+
+    /**
+     * The settings whichs properties will be bound by this container.
+     * Changes in this settings instance will be reflected by the container.
+     */
     protected GameContainerSettings settings;
+
+    /**
+     * The window of this container.
+     */
     protected Window window;
+
+    /**
+     * The width of this container in units.
+     */
     protected Unit width;
+
+    /**
+     * The height of this container in units.
+     */
     protected Unit height;
-    private Timer testTimer;
 
     /**
      * Instantiates a new Game container.
      *
-     * @param settings the settings
+     * @param settings the settings that will be bound by this container. Changes to the properties
+     *                 of this settings instance will be reflected by the container.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -40,17 +61,17 @@ public class GameContainer implements Runnable, Killable
     public GameContainer(GameContainerSettings settings)
     {
         this.settings = settings;
-        createWindow();
-        configureSettings();
     }
 
     /**
-     * Configure settings.
+     * Binds specific actions to the properties of the settings instance.
+     * <p>
+     * After this call changes to the settings, i.e. to the window size, will be reflected by the window.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
      */
-    protected void configureSettings()
+    protected void bindSettings()
     {
         this.settings.getTitle().onChange(title -> this.window.setWindowTitle(title));
         this.settings.getWindowSize().onChange((width, height) -> {
@@ -62,9 +83,10 @@ public class GameContainer implements Runnable, Killable
     }
 
     /**
-     * Gets settings.
+     * Gets the settings instance that is bound by this container.
      *
-     * @return the settings
+     * @return the settings instance that was given to this container and
+     * whichs properties are reflected by this instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -75,15 +97,17 @@ public class GameContainer implements Runnable, Killable
     }
 
     /**
-     * Sets game loop.
+     * Sets game loop that will be started when this container is started.
      *
-     * @param loop the loop
+     * @param loop the loop instance which is already fully configured.
      *
+     * @throws GameContainerException If there is already a loop set which is currently running.
      * @author Lukas Hartwig
      * @since 02.11.2021
      */
     public void setGameLoop(GameLoop loop)
     {
+        // already set loop is currently running, should not just replace
         if (this.loop != null && this.loop.isRunning())
         {
             throw new GameContainerException("Previously set loop is already active");
@@ -93,19 +117,20 @@ public class GameContainer implements Runnable, Killable
     }
 
     /**
-     * Create window.
+     * Create the window based on the given settings.
      *
+     * @throws GameContainerException if GLFW could not be initialized.
      * @author Lukas Hartwig
      * @since 02.11.2021
      */
     protected void createWindow()
     {
+        GLFWErrorCallback.createPrint(System.err).set();
+
         if (!glfwInit())
         {
-            throw new IllegalStateException("Unable to initialize GLFW");
+            throw new GameContainerException("Unable to initialize GLFW");
         }
-
-        GLFWErrorCallback.createPrint(System.err).set();
 
         this.window = new Window(this.settings.getWindowSize().getFirst(),
                                  this.settings.getWindowSize().getSecond(),
@@ -113,11 +138,10 @@ public class GameContainer implements Runnable, Killable
                                  this.settings.getFullscreen().get(),
                                  0);
 
+        // set ratio based on settings and calculate unit size for this container
         Unit.setRatio(this.settings.getPixelsPerUnit().get());
         this.width = Unit.forPixels(this.window.getWidth());
         this.height = Unit.forPixels(this.window.getHeight());
-
-        System.out.println(this.width);
 
         this.window.showWindow();
 
@@ -130,14 +154,14 @@ public class GameContainer implements Runnable, Killable
                 0.f,
                 0.f,
                 1.f);
-
-        this.testTimer = new Timer(() -> this.settings.setWindowSize(854, 480), 4);
     }
 
     /**
-     * Tick.
+     * The tick method of this container.
+     * <p>
+     * This will check if the window needs to be closed and will forward tick calls scenes.
      *
-     * @param delta the delta
+     * @param delta the delta since the last tick call in seconds.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -145,8 +169,6 @@ public class GameContainer implements Runnable, Killable
     public void tick(double delta)
     {
         // TODO forward tick call to scene
-
-        this.testTimer.tick(delta);
 
         glfwPollEvents();
 
@@ -157,7 +179,9 @@ public class GameContainer implements Runnable, Killable
     }
 
     /**
-     * Render.
+     * The render method of this container.
+     * <p>
+     * This will call {@link Window#beforeRender()} before forwarding the render call and {@link Window#afterRender()} afterwards.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -168,6 +192,7 @@ public class GameContainer implements Runnable, Killable
 
         this.window.beforeRender();
 
+        // TODO remove test rendering
         glColor4f(1, 0, 0, 0);
 
         glBegin(GL_LINES);
@@ -189,7 +214,7 @@ public class GameContainer implements Runnable, Killable
     }
 
     /**
-     * Kill.
+     * Terminates this container by closing the window and stopping the gameloop.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -202,7 +227,9 @@ public class GameContainer implements Runnable, Killable
     }
 
     /**
-     * Run.
+     * Starts the game by creating the window, binding the settings and starting the gameloop.
+     * <p>
+     * If no gameloop was set previously a defualt one will be created and used.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -210,6 +237,9 @@ public class GameContainer implements Runnable, Killable
     @Override
     public void run()
     {
+        createWindow();
+        bindSettings();
+
         if (this.loop == null)
         {
             this.loop = createDefaultGameLoop();
@@ -219,9 +249,12 @@ public class GameContainer implements Runnable, Killable
     }
 
     /**
-     * Create default game loop game loop.
+     * Creates a default game loop.
+     * <p>
+     * This method is called automatically if no gameloop instance was set
+     * via {@link #setGameLoop(GameLoop)} when the container is started via {@link #run()}.
      *
-     * @return the game loop
+     * @return the created loop.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -236,9 +269,11 @@ public class GameContainer implements Runnable, Killable
     }
 
     /**
-     * Gets width.
+     * Gets the width of this container in units.
+     * <p>
+     * This method returns null prior to the start of the container via {@link #run()}.
      *
-     * @return the width
+     * @return the width of this container or null if the container was not started yet.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -249,9 +284,11 @@ public class GameContainer implements Runnable, Killable
     }
 
     /**
-     * Gets height.
+     * Gets the height of this container in units.
+     * <p>
+     * This method returns null prior to the start of the container via {@link #run()}.
      *
-     * @return the height
+     * @return the height of this container or null if the container was not started yet.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021

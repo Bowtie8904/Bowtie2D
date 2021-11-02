@@ -9,7 +9,14 @@ package bt2d.utils;
  */
 public record Unit(double units)
 {
+    /**
+     * A constant for zero units since its expected to be used frequently.
+     */
     private static final Unit ZERO = Unit.forUnits(0);
+
+    /**
+     * The ratio of pixels to unit. Describes how many pixels are in one unit.
+     */
     private static double ratio = 1;
 
     /**
@@ -36,7 +43,6 @@ public record Unit(double units)
      */
     public static void setRatio(double pixelsPerUnit)
     {
-        System.out.println(pixelsPerUnit);
         Unit.ratio = pixelsPerUnit;
     }
 
@@ -58,7 +64,7 @@ public record Unit(double units)
      *
      * @param units the units
      *
-     * @return unit
+     * @return The created instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -73,7 +79,7 @@ public record Unit(double units)
      *
      * @param pixels the pixels
      *
-     * @return unit
+     * @return The created instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -89,7 +95,7 @@ public record Unit(double units)
      *
      * @param units the units
      *
-     * @return the unit
+     * @return The created instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -105,7 +111,7 @@ public record Unit(double units)
      *
      * @param unit the unit
      *
-     * @return the unit
+     * @return The created instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -121,7 +127,7 @@ public record Unit(double units)
      *
      * @param unit the unit
      *
-     * @return the unit
+     * @return The created instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -137,7 +143,7 @@ public record Unit(double units)
      *
      * @param units the units
      *
-     * @return the unit
+     * @return The created instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -153,7 +159,7 @@ public record Unit(double units)
      *
      * @param amount the amount
      *
-     * @return the unit
+     * @return The created instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -169,7 +175,7 @@ public record Unit(double units)
      *
      * @param amount the amount
      *
-     * @return the unit
+     * @return The created instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -185,7 +191,7 @@ public record Unit(double units)
      *
      * @param pixels the pixels
      *
-     * @return the unit
+     * @return The created instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -201,7 +207,7 @@ public record Unit(double units)
      *
      * @param pixels the pixels
      *
-     * @return the unit
+     * @return The created instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -217,7 +223,7 @@ public record Unit(double units)
      *
      * @param unit the unit
      *
-     * @return the unit
+     * @return The created instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -233,7 +239,7 @@ public record Unit(double units)
      *
      * @param unit the unit
      *
-     * @return the unit
+     * @return The created instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -246,7 +252,7 @@ public record Unit(double units)
     /**
      * Gets the value for pixels. This value is calculated every call to ensure accuracy in case the ratio is changed.
      *
-     * @return double
+     * @return the number of pixels this instance describes. This equals to units * ratio.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021

@@ -8,9 +8,24 @@ package bt2d.utils;
  */
 public class Timer
 {
+    /**
+     * The action that will be executed after the delay.
+     */
     private Runnable action;
+
+    /**
+     * The time to wat until the execution of the set action in seconds.
+     */
     private double delay;
+
+    /**
+     * The accumulated delta in seconds which is used to determine if the set delay has passed.
+     */
     private double deltaSum;
+
+    /**
+     * Indicates whether this timers action has been executed.
+     */
     private boolean executed;
 
     /**
@@ -30,8 +45,10 @@ public class Timer
 
     /**
      * Checks if the desired delay has passed and if so executed the set action.
+     * <p>
+     * If the action has been executed once (see {@link #isExecuted()}) this becomes a no-op.
      *
-     * @param delta the delta of the tick loop
+     * @param delta the delta of the tick loop in seconds.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -48,5 +65,18 @@ public class Timer
                 this.executed = true;
             }
         }
+    }
+
+    /**
+     * Indicates whether this timers action has been executed.
+     *
+     * @return true if the action has been executed, false otherwise.
+     *
+     * @author Lukas Hartwig
+     * @since 02.11.2021
+     */
+    public boolean isExecuted()
+    {
+        return this.executed;
     }
 }
