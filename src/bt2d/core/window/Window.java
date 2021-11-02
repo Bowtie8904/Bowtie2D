@@ -34,7 +34,7 @@ public class Window implements Killable
 
     protected GLFWVidMode videoMode;
 
-    public Window(int width, int height, String title, boolean fullScreen, int refreshRate)
+    public Window(int width, int height, String title, boolean fullScreen, boolean undecorated, int refreshRate)
     {
         this.height = height;
         this.width = width;
@@ -44,6 +44,8 @@ public class Window implements Killable
         this.shouldClose = false;
 
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_DECORATED, undecorated ? GLFW_FALSE : GLFW_TRUE);
 
         this.monitor = glfwGetPrimaryMonitor();
 

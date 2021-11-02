@@ -3,6 +3,7 @@ package bt2d.core.container;
 import bt.types.Killable;
 import bt2d.core.container.exc.GameContainerException;
 import bt2d.core.container.settings.GameContainerSettings;
+import bt2d.core.container.settings.exc.SettingsChangeException;
 import bt2d.core.loop.GameLoop;
 import bt2d.core.window.Window;
 import bt2d.utils.Unit;
@@ -74,11 +75,21 @@ public class GameContainer implements Runnable, Killable
     protected void bindSettings()
     {
         this.settings.getTitle().onChange(title -> this.window.setWindowTitle(title));
+
+        this.settings.getUndecorated().onChange(undecorated -> {
+            throw new SettingsChangeException("Cant change undecorated property after the window was created");
+        });
+
         this.settings.getWindowSize().onChange((width, height) -> {
             this.window.updateWindowSize(width, height);
             this.settings.setPixelsPerUnit(width / this.width.units());
         });
-        this.settings.getFullscreen().onChange(fullscreen -> this.window.setFullScreenMode(fullscreen));
+
+        this.settings.getFullscreen().onChange(fullscreen -> {
+            this.window.setFullScreenMode(fullscreen);
+            this.settings.setPixelsPerUnit(this.window.getWidth() / this.width.units());
+        });
+
         this.settings.getPixelsPerUnit().onChange(ratio -> Unit.setRatio(ratio));
     }
 
@@ -139,6 +150,7 @@ public class GameContainer implements Runnable, Killable
                                  this.settings.getWindowSize().getSecond(),
                                  this.settings.getTitle().get(),
                                  this.settings.getFullscreen().get(),
+                                 this.settings.getUndecorated().get(),
                                  0);
 
         // set ratio based on settings and calculate unit size for this container
