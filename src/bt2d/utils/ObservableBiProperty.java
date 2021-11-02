@@ -123,7 +123,7 @@ public class ObservableBiProperty<T1, T2>
     /**
      * Sets a listener which will be notified about changes of this properties values.
      *
-     * @param onChange A QuadConsumer whichs first argument will be:
+     * @param onChange A QuadConsumer whichs arguments will be:
      *                 - old first value
      *                 - new first value
      *                 - old second value
