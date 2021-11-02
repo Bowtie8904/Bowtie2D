@@ -195,8 +195,7 @@ public class Window implements Killable
      * @since 01-11-2021
      */
     public void setFullScreenMode(boolean fullScreenMode) {
-        // TODO I think we need to set width and height for fullscreen as well to be able to retrieve this information in the game container
-        // this is relevant for calculating the pixels to unit ratio when switching to fullscreen or back
+
         if (this.fullScreenMode != fullScreenMode) {
             boolean priorState = this.fullScreenMode;
             this.fullScreenMode = fullScreenMode;
