@@ -157,7 +157,7 @@ public class GameLoop implements Killable, Runnable
      * </p>
      *
      * @author Lukas Hartwig
-     * @see bt.types.Killable#kill()
+     * @see bt.types.Killable#kill() bt.types.Killable#kill()
      * @since 28.10.2021
      */
     @Override
@@ -340,6 +340,8 @@ public class GameLoop implements Killable, Runnable
 
     /**
      * Runs the tick runnable if it is not null.
+     *
+     * @param delta the delta since the last tick call in seconds.
      *
      * @author Lukas Hartwig
      * @since 28.10.2021

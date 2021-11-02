@@ -15,6 +15,8 @@ import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
+ * The type Game container.
+ *
  * @author Lukas Hartwig
  * @since 01.11.2021
  */
@@ -27,6 +29,14 @@ public class GameContainer implements Runnable, Killable
     protected Unit height;
     private Timer testTimer;
 
+    /**
+     * Instantiates a new Game container.
+     *
+     * @param settings the settings
+     *
+     * @author Lukas Hartwig
+     * @since 02.11.2021
+     */
     public GameContainer(GameContainerSettings settings)
     {
         this.settings = settings;
@@ -34,6 +44,12 @@ public class GameContainer implements Runnable, Killable
         configureSettings();
     }
 
+    /**
+     * Configure settings.
+     *
+     * @author Lukas Hartwig
+     * @since 02.11.2021
+     */
     protected void configureSettings()
     {
         this.settings.getTitle().onChange(title -> this.window.setWindowTitle(title));
@@ -45,11 +61,27 @@ public class GameContainer implements Runnable, Killable
         this.settings.getPixelsPerUnit().onChange(ratio -> Unit.setRatio(ratio));
     }
 
+    /**
+     * Gets settings.
+     *
+     * @return the settings
+     *
+     * @author Lukas Hartwig
+     * @since 02.11.2021
+     */
     public GameContainerSettings getSettings()
     {
         return this.settings;
     }
 
+    /**
+     * Sets game loop.
+     *
+     * @param loop the loop
+     *
+     * @author Lukas Hartwig
+     * @since 02.11.2021
+     */
     public void setGameLoop(GameLoop loop)
     {
         if (this.loop != null && this.loop.isRunning())
@@ -60,6 +92,12 @@ public class GameContainer implements Runnable, Killable
         this.loop = loop;
     }
 
+    /**
+     * Create window.
+     *
+     * @author Lukas Hartwig
+     * @since 02.11.2021
+     */
     protected void createWindow()
     {
         if (!glfwInit())
@@ -96,6 +134,14 @@ public class GameContainer implements Runnable, Killable
         this.testTimer = new Timer(() -> this.settings.setWindowSize(854, 480), 4);
     }
 
+    /**
+     * Tick.
+     *
+     * @param delta the delta
+     *
+     * @author Lukas Hartwig
+     * @since 02.11.2021
+     */
     public void tick(double delta)
     {
         // TODO forward tick call to scene
@@ -110,6 +156,12 @@ public class GameContainer implements Runnable, Killable
         }
     }
 
+    /**
+     * Render.
+     *
+     * @author Lukas Hartwig
+     * @since 02.11.2021
+     */
     public void render()
     {
         // TODO forward render call to scene
@@ -136,6 +188,12 @@ public class GameContainer implements Runnable, Killable
         this.window.afterRender();
     }
 
+    /**
+     * Kill.
+     *
+     * @author Lukas Hartwig
+     * @since 02.11.2021
+     */
     @Override
     public void kill()
     {
@@ -143,6 +201,12 @@ public class GameContainer implements Runnable, Killable
         this.window.kill();
     }
 
+    /**
+     * Run.
+     *
+     * @author Lukas Hartwig
+     * @since 02.11.2021
+     */
     @Override
     public void run()
     {
@@ -154,6 +218,14 @@ public class GameContainer implements Runnable, Killable
         this.loop.run();
     }
 
+    /**
+     * Create default game loop game loop.
+     *
+     * @return the game loop
+     *
+     * @author Lukas Hartwig
+     * @since 02.11.2021
+     */
     protected GameLoop createDefaultGameLoop()
     {
         GameLoop defaultLoop = new GameLoop(this::tick, this::render);
@@ -163,11 +235,27 @@ public class GameContainer implements Runnable, Killable
         return defaultLoop;
     }
 
+    /**
+     * Gets width.
+     *
+     * @return the width
+     *
+     * @author Lukas Hartwig
+     * @since 02.11.2021
+     */
     public Unit getWidth()
     {
         return width;
     }
 
+    /**
+     * Gets height.
+     *
+     * @return the height
+     *
+     * @author Lukas Hartwig
+     * @since 02.11.2021
+     */
     public Unit getHeight()
     {
         return height;
