@@ -94,8 +94,7 @@ public class Window implements Killable
      * @author Marc Hermes
      * @since 01-11-2021
      */
-    public Window(int width, int height, String title, boolean fullScreen, int refreshRate) {
-
+    public Window(int width, int height, String title, boolean fullScreen, boolean undecorated, int refreshRate) {
         this.height = height;
         this.width = width;
         this.windowTitle = title;
@@ -106,6 +105,8 @@ public class Window implements Killable
         this.originalHeight = height;
 
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_DECORATED, undecorated ? GLFW_FALSE : GLFW_TRUE);
 
         this.monitor = glfwGetPrimaryMonitor();
 
