@@ -1,5 +1,6 @@
 package bt2d.core.container.settings;
 
+import bt2d.utils.ObservableBiProperty;
 import bt2d.utils.ObservableProperty;
 
 /**
@@ -8,42 +9,42 @@ import bt2d.utils.ObservableProperty;
  */
 public class GameContainerSettings
 {
-    private ObservableProperty<Integer> windowWidth;
-    private ObservableProperty<Integer> windowHeight;
+    private ObservableBiProperty<Integer, Integer> windowSize;
     private ObservableProperty<String> title;
     private ObservableProperty<Boolean> undecorated;
     private ObservableProperty<Boolean> fullscreen;
     private ObservableProperty<Boolean> debugRendering;
+    private ObservableProperty<Double> pixelsPerUnit;
 
     public GameContainerSettings()
     {
-        this.windowWidth = new ObservableProperty<>();
-        this.windowHeight = new ObservableProperty<>();
+        this.windowSize = new ObservableBiProperty<>();
         this.title = new ObservableProperty<>();
+        this.pixelsPerUnit = new ObservableProperty<>(1.0);
         this.undecorated = new ObservableProperty<>(false);
         this.fullscreen = new ObservableProperty<>(false);
         this.debugRendering = new ObservableProperty<>(false);
     }
 
-    public ObservableProperty<Integer> getWindowWidth()
+    public ObservableBiProperty<Integer, Integer> getWindowSize()
     {
-        return this.windowWidth;
+        return this.windowSize;
     }
 
-    public GameContainerSettings setWindowWidth(int width)
+    public GameContainerSettings setWindowSize(int width, int height)
     {
-        this.windowWidth.set(width);
+        this.windowSize.set(width, height);
         return this;
     }
 
-    public ObservableProperty<Integer> getWindowHeight()
+    public ObservableProperty<Double> getPixelsPerUnit()
     {
-        return this.windowHeight;
+        return this.pixelsPerUnit;
     }
 
-    public GameContainerSettings setWindowHeight(int height)
+    public GameContainerSettings setPixelsPerUnit(double pixelsPerUnit)
     {
-        this.windowHeight.set(height);
+        this.pixelsPerUnit.set(pixelsPerUnit);
         return this;
     }
 
