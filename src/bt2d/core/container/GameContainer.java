@@ -84,6 +84,9 @@ public class GameContainer implements Runnable, Killable
 
     /**
      * Gets the settings instance that is bound by this container.
+     * <p>
+     * Changes to this settings instances properties will be reflected by this container.
+     * I.e. changing the properties for the window size will resize the window of the container.
      *
      * @return the settings instance that was given to this container and
      * whichs properties are reflected by this instance.
