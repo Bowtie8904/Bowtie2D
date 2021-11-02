@@ -163,6 +163,11 @@ public class GameLoop implements Killable, Runnable
     @Override
     public void kill()
     {
+        if (!InstanceKiller.isActive())
+        {
+            InstanceKiller.unregister(this);
+        }
+
         System.out.println("Killing game loop.");
         this.running = false;
     }
