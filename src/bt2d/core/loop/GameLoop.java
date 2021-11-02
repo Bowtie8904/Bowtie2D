@@ -157,12 +157,17 @@ public class GameLoop implements Killable, Runnable
      * </p>
      *
      * @author Lukas Hartwig
-     * @see bt.runtime.Killable#kill()
+     * @see bt.types.Killable#kill() bt.types.Killable#kill()
      * @since 28.10.2021
      */
     @Override
     public void kill()
     {
+        if (!InstanceKiller.isActive())
+        {
+            InstanceKiller.unregister(this);
+        }
+
         System.out.println("Killing game loop.");
         this.running = false;
     }
@@ -336,6 +341,8 @@ public class GameLoop implements Killable, Runnable
     /**
      * Runs the tick runnable if it is not null.
      *
+     * @param delta the delta since the last tick call in seconds.
+     *
      * @author Lukas Hartwig
      * @since 28.10.2021
      */
@@ -492,5 +499,18 @@ public class GameLoop implements Killable, Runnable
         }
 
         return current;
+    }
+
+    /**
+     * Indicates whether this loop has been started and is currently running.
+     *
+     * @return True if the loop is running, false otherwise.
+     *
+     * @author Lukas Hartwig
+     * @since 01.11.2021
+     */
+    public boolean isRunning()
+    {
+        return this.running;
     }
 }
