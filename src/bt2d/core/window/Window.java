@@ -9,7 +9,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Class used to monitor and change the properties of the displayed window
- *
+ * <p>
  * Any and all changes done to the windows properties should be done through this class.
  *
  * @author Marc Hermes
@@ -86,15 +86,17 @@ public class Window implements Killable
     /**
      * Basic constructor for the Window class
      *
-     * @param width width of the window
-     * @param height height of the window
-     * @param title displayed title of the window
-     * @param fullScreen indicates whether the window starts in full screen
+     * @param width       width of the window
+     * @param height      height of the window
+     * @param title       displayed title of the window
+     * @param fullScreen  indicates whether the window starts in full screen
      * @param refreshRate refresh rate of the window in hertz
+     *
      * @author Marc Hermes
      * @since 01-11-2021
      */
-    public Window(int width, int height, String title, boolean fullScreen, boolean undecorated, int refreshRate) {
+    public Window(int width, int height, String title, boolean fullScreen, boolean undecorated, int refreshRate)
+    {
         this.height = height;
         this.width = width;
         this.windowTitle = title;
@@ -130,15 +132,16 @@ public class Window implements Killable
 
     }
 
-
     /**
      * Returns the ID of this window
      *
      * @return ID of the window
+     *
      * @author Marc Hermes
      * @since 01-11-2021
      */
-    public long getWindow() {
+    public long getWindow()
+    {
         return window;
     }
 
@@ -146,10 +149,12 @@ public class Window implements Killable
      * Sets the monitored window to a different one
      *
      * @param window the ID of the window
+     *
      * @author Marc Hermes
      * @since 01-11-2021
      */
-    public void setWindow(long window) {
+    public void setWindow(long window)
+    {
         this.window = window;
     }
 
@@ -157,21 +162,25 @@ public class Window implements Killable
      * Returns true if the window should be closed
      *
      * @return true if window is or should be closed
+     *
      * @author Marc Hermes
      * @since 01-11-2021
      */
-    public boolean isShouldClose() {
-        return shouldClose;
+    public boolean isShouldClose()
+    {
+        return shouldClose || glfwWindowShouldClose(this.window);
     }
 
     /**
      * Sets the shouldClose variable indicating whether the window should be closed
      *
      * @param shouldClose the boolean value
+     *
      * @author Marc Hermes
      * @since 01-11-2021
      */
-    public void setShouldClose(boolean shouldClose) {
+    public void setShouldClose(boolean shouldClose)
+    {
         this.shouldClose = shouldClose;
         glfwSetWindowShouldClose(window, shouldClose);
     }
@@ -180,10 +189,12 @@ public class Window implements Killable
      * Returns true if the window is currently in full screen mode
      *
      * @return true if in full screen mode
+     *
      * @author Marc Hermes
      * @since 01-11-2021
      */
-    public boolean isFullScreenMode() {
+    public boolean isFullScreenMode()
+    {
         return fullScreenMode;
     }
 
@@ -191,22 +202,28 @@ public class Window implements Killable
      * This method sets the fullScreenMode variable for the window class and immediately applies the change.
      *
      * @param fullScreenMode true will change to full screen mode, false will apply windowed state
+     *
      * @author Marc Hermes
      * @since 01-11-2021
      */
-    public void setFullScreenMode(boolean fullScreenMode) {
+    public void setFullScreenMode(boolean fullScreenMode)
+    {
 
-        if (this.fullScreenMode != fullScreenMode) {
+        if (this.fullScreenMode != fullScreenMode)
+        {
             boolean priorState = this.fullScreenMode;
             this.fullScreenMode = fullScreenMode;
 
-            if (!priorState) {
+            if (!priorState)
+            {
                 xPos = 0;
                 yPos = 0;
                 glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), xPos, yPos, videoMode.width(), videoMode.height(), refreshRate);
                 height = videoMode.height();
                 width = videoMode.width();
-            } else {
+            }
+            else
+            {
                 xPos = (videoMode.width() - originalWidth) / 2;
                 yPos = (videoMode.height() - originalHeight) / 2;
                 glfwSetWindowMonitor(window, 0, xPos, yPos, originalWidth, originalHeight, 0);
@@ -217,18 +234,19 @@ public class Window implements Killable
     }
 
     /**
-     *
      * @return the width of the window
+     *
      * @author Marc Hermes
      * @since 02-11-2021
      */
-    public int getWidth() {
+    public int getWidth()
+    {
         return width;
     }
 
     /**
-     *
      * @param width the width of the window, doesn't update the displayed window size yet ( use updateWindowSize() instead )
+     *
      * @author Marc Hermes
      * @since 02-11-2021
      */
@@ -238,8 +256,8 @@ public class Window implements Killable
     }
 
     /**
-     *
      * @return the height of the window
+     *
      * @author Marc Hermes
      * @since 02-11-2021
      */
@@ -249,8 +267,8 @@ public class Window implements Killable
     }
 
     /**
-     *
      * @param height the height of the window, doesn't update the displayed window size yet ( call updateWindowSize() instead )
+     *
      * @author Marc Hermes
      * @since 02-11-2021
      */
@@ -260,28 +278,30 @@ public class Window implements Killable
     }
 
     /**
-     *
      * @return width of the window with which it was created
+     *
      * @author Marc Hermes
      * @since 02-11-2021
      */
-    public int getOriginalWidth() {
+    public int getOriginalWidth()
+    {
         return originalWidth;
     }
 
     /**
-     *
      * @return height of the window with which it was created
+     *
      * @author Marc Hermes
      * @since 02-11-2021
      */
-    public int getOriginalHeight() {
+    public int getOriginalHeight()
+    {
         return originalHeight;
     }
 
     /**
-     *
      * @return the current title of the window
+     *
      * @author Marc Hermes
      * @since 02-11-2021
      */
@@ -291,8 +311,8 @@ public class Window implements Killable
     }
 
     /**
-     *
      * @param windowTitle the new title for the window
+     *
      * @author Marc Hermes
      * @since 02-11-2021
      */
@@ -305,8 +325,9 @@ public class Window implements Killable
     /**
      * This method updates the window size with a new height and width value. The changes will immediately be reflected on the display.
      *
-     * @param width the new width for the window
+     * @param width  the new width for the window
      * @param height the new height for the window
+     *
      * @author Marc Hermes
      * @since 02-11-2021
      */
