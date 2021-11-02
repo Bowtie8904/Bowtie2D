@@ -8,7 +8,7 @@ import java.util.function.Consumer;
  * <p>
  * Usage:
  * <pre>
- *     ObservableProperty<Boolean> myBool = new ObservableProperty<>(true);
+ *     ObservableProperty< Boolean> myBool = new ObservableProperty<>(true);
  *     myBool.onChange((oldValue, newValue) -> System.out.println("Old value: " + oldValue + "  new value: " + newValue));
  *     myBool.set(false);
  * </pre>
