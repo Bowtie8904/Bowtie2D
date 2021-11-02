@@ -4,6 +4,8 @@ import bt.types.Killable;
 import bt2d.core.container.exc.GameContainerException;
 import bt2d.core.container.settings.GameContainerSettings;
 import bt2d.core.container.settings.exc.SettingsChangeException;
+import bt2d.core.input.key.KeyActions;
+import bt2d.core.input.key.KeyInput;
 import bt2d.core.loop.GameLoop;
 import bt2d.core.window.Window;
 import bt2d.utils.Unit;
@@ -51,6 +53,11 @@ public class GameContainer implements Runnable, Killable
     protected Unit height;
 
     /**
+     * A set of key actions that can be freely configured to setup global triggers.
+     */
+    protected KeyActions keyActions;
+
+    /**
      * Instantiates a new Game container.
      *
      * @param settings the settings that will be bound by this container. Changes to the properties
@@ -62,6 +69,7 @@ public class GameContainer implements Runnable, Killable
     public GameContainer(GameContainerSettings settings)
     {
         this.settings = settings;
+        this.keyActions = new KeyActions();
     }
 
     /**
@@ -158,6 +166,8 @@ public class GameContainer implements Runnable, Killable
         this.width = Unit.forPixels(this.window.getWidth());
         this.height = Unit.forPixels(this.window.getHeight());
 
+        new KeyInput(this.window.getWindow());
+
         this.window.showWindow();
 
         GL.createCapabilities();
@@ -186,6 +196,10 @@ public class GameContainer implements Runnable, Killable
         // TODO forward tick call to scene
 
         glfwPollEvents();
+
+        KeyInput.get().checkKeyChanges();
+
+        this.keyActions.checkActions();
 
         if (this.window.isShouldClose())
         {
@@ -311,5 +325,10 @@ public class GameContainer implements Runnable, Killable
     public Unit getHeight()
     {
         return height;
+    }
+
+    public KeyActions getKeyActions()
+    {
+        return this.keyActions;
     }
 }
