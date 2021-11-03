@@ -58,6 +58,11 @@ public class GameContainer implements Runnable, Killable
     protected KeyActions keyActions;
 
     /**
+     * This containers key input instacne which is used to check pressed keys.
+     */
+    protected KeyInput keyInput;
+
+    /**
      * Instantiates a new Game container.
      *
      * @param settings the settings that will be bound by this container. Changes to the properties
@@ -166,8 +171,6 @@ public class GameContainer implements Runnable, Killable
         this.width = Unit.forPixels(this.window.getWidth());
         this.height = Unit.forPixels(this.window.getHeight());
 
-        new KeyInput(this.window.getWindow());
-
         this.window.showWindow();
 
         GL.createCapabilities();
@@ -179,6 +182,19 @@ public class GameContainer implements Runnable, Killable
                 0.f,
                 0.f,
                 1.f);
+    }
+
+    /**
+     * Creates the {@link KeyInput} instance of this container.
+     * <p>
+     * The setup instance will be available via {@link #getKeyInput()}.
+     *
+     * @author Lukas Hartwig
+     * @since 03.11.2021
+     */
+    protected void setupKeyInput()
+    {
+        this.keyInput = new KeyInput(this.window.getWindow());
     }
 
     /**
@@ -197,9 +213,8 @@ public class GameContainer implements Runnable, Killable
 
         glfwPollEvents();
 
-        KeyInput.get().checkKeyChanges();
-
-        this.keyActions.checkActions();
+        this.keyInput.checkKeyChanges();
+        this.keyActions.checkActions(this.keyInput);
 
         if (this.window.isShouldClose())
         {
@@ -268,6 +283,7 @@ public class GameContainer implements Runnable, Killable
     {
         createWindow();
         bindSettings();
+        setupKeyInput();
 
         if (this.loop == null)
         {
@@ -327,8 +343,33 @@ public class GameContainer implements Runnable, Killable
         return height;
     }
 
+    /**
+     * Returns a set of key actions that can be extended.
+     * <p>
+     * This can be used to add global key actions to this container.
+     *
+     * @return The key actions which were setup for this container.
+     *
+     * @author Lukas Hartwig
+     * @since 03.11.2021
+     */
     public KeyActions getKeyActions()
     {
         return this.keyActions;
+    }
+
+    /**
+     * Gets {@link KeyInput} instance that was setup for this container.
+     * <p>
+     * The returned instance can be used to check if certain keys were pressed.
+     *
+     * @return The key input instance setup for this container.
+     *
+     * @author Lukas Hartwig
+     * @since 03.11.2021
+     */
+    public KeyInput getKeyInput()
+    {
+        return this.keyInput;
     }
 }

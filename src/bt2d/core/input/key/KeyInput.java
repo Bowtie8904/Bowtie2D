@@ -15,10 +15,6 @@ import java.util.Map;
  */
 public class KeyInput
 {
-    /**
-     * The singleton instance.
-     */
-    private volatile static KeyInput instance;
 
     /**
      * The keys mapped by their keycode keeping track of their status.
@@ -40,23 +36,9 @@ public class KeyInput
      */
     public KeyInput(long windowRef)
     {
-        instance = this;
         this.keyValues = new HashMap<>();
         this.keyChanges = new HashMap<>();
         GLFW.glfwSetKeyCallback(windowRef, this::onKeyAction);
-    }
-
-    /**
-     * Get key input.
-     *
-     * @return the key input
-     *
-     * @author Lukas Hartwig
-     * @since 03.11.2021
-     */
-    public static KeyInput get()
-    {
-        return instance;
     }
 
     /**

@@ -4,13 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The type Key actions.
+ * Defines a set of actions mapped to specific keys.
  *
  * @author Lukas Hartwig
  * @since 03.11.2021
  */
 public class KeyActions
 {
+    /**
+     * The actions mapped by the key + mods combination.
+     */
     private Map<Key, Runnable> actions;
 
     /**
@@ -25,10 +28,14 @@ public class KeyActions
     }
 
     /**
-     * On key down.
+     * Defines an action that is executed if the given key is pressed.
+     * <p>
+     * If the key remains pressed then this action will be executed every tick.
+     * <p>
+     * For one time actions see {@link #onKeyJustDown(int, Runnable)}.
      *
-     * @param key    the key
-     * @param action the action
+     * @param key    the key code of the trigger key.
+     * @param action the action to execute.
      *
      * @author Lukas Hartwig
      * @since 03.11.2021
@@ -39,11 +46,15 @@ public class KeyActions
     }
 
     /**
-     * On key down.
+     * Defines an action that is executed if the given key + mods combination is pressed.
+     * <p>
+     * If the key remains pressed then this action will be executed every tick.
+     * <p>
+     * For one time actions see {@link #onKeyJustDown(int, int, Runnable)}.
      *
-     * @param key    the key
-     * @param mods   the mods
-     * @param action the action
+     * @param key    the key code of the trigger key.
+     * @param mods   the mods of this key press, i.e. shift or alt.
+     * @param action the action to execute.
      *
      * @author Lukas Hartwig
      * @since 03.11.2021
@@ -54,10 +65,12 @@ public class KeyActions
     }
 
     /**
-     * On key just down.
+     * Defines an action that is executed if the given key is pressed.
+     * <p>
+     * This is a one time per key press action. If the key remains pressed this action will not be repeated.
      *
-     * @param key    the key
-     * @param action the action
+     * @param key    the key code of the trigger key.
+     * @param action the action to execute.
      *
      * @author Lukas Hartwig
      * @since 03.11.2021
@@ -68,11 +81,13 @@ public class KeyActions
     }
 
     /**
-     * On key just down.
+     * Defines an action that is executed if the given key + mods combination is pressed.
+     * <p>
+     * This is a one time per key press action. If the key remains pressed this action will not be repeated.
      *
-     * @param key    the key
-     * @param mods   the mods
-     * @param action the action
+     * @param key    the key code of the trigger key.
+     * @param mods   the mods of this key press, i.e. shift or alt.
+     * @param action the action to execute.
      *
      * @author Lukas Hartwig
      * @since 03.11.2021
@@ -83,10 +98,12 @@ public class KeyActions
     }
 
     /**
-     * On keyreleased.
+     * Defines an action that is executed if the given key is released.
+     * <p>
+     * This is a one time per release action which will be executed in the same tick as the releasing is detected.
      *
-     * @param key    the key
-     * @param action the action
+     * @param key    the key code of the trigger key.
+     * @param action the action to execute.
      *
      * @author Lukas Hartwig
      * @since 03.11.2021
@@ -97,11 +114,13 @@ public class KeyActions
     }
 
     /**
-     * On keyreleased.
+     * Defines an action that is executed if the given key + mods combination is released.
+     * <p>
+     * This is a one time per release action which will be executed in the same tick as the releasing is detected.
      *
-     * @param key    the key
-     * @param mods   the mods
-     * @param action the action
+     * @param key    the key code of the trigger key.
+     * @param mods   the mods of this key press, i.e. shift or alt.
+     * @param action the action to execute.
      *
      * @author Lukas Hartwig
      * @since 03.11.2021
@@ -112,24 +131,27 @@ public class KeyActions
     }
 
     /**
-     * Check actions.
+     * Check if any of the configured actions need to be executed based on the given KeyInput instance.
+     * <p>
+     * This method should be called during every tick iteration after the
+     * KeyInputs {@link KeyInput#checkKeyChanges()} method was called.
      *
      * @author Lukas Hartwig
      * @since 03.11.2021
      */
-    public void checkActions()
+    public void checkActions(KeyInput input)
     {
         for (Key key : this.actions.keySet())
         {
-            if (key.getStatus() == Key.KEY_DOWN && KeyInput.get().isKeyDown(key.getKeycode(), key.getMods()))
+            if (key.getStatus() == Key.KEY_DOWN && input.isKeyDown(key.getKeycode(), key.getMods()))
             {
                 this.actions.get(key).run();
             }
-            else if (key.getStatus() == Key.KEY_JUST_DOWN && KeyInput.get().isKeyJustDown(key.getKeycode(), key.getMods()))
+            else if (key.getStatus() == Key.KEY_JUST_DOWN && input.isKeyJustDown(key.getKeycode(), key.getMods()))
             {
                 this.actions.get(key).run();
             }
-            else if (key.getStatus() == Key.KEY_RELEASED && KeyInput.get().isKeyReleased(key.getKeycode(), key.getMods()))
+            else if (key.getStatus() == Key.KEY_RELEASED && input.isKeyReleased(key.getKeycode(), key.getMods()))
             {
                 this.actions.get(key).run();
             }
