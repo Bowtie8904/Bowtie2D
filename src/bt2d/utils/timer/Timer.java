@@ -1,5 +1,7 @@
 package bt2d.utils.timer;
 
+import java.time.Duration;
+
 /**
  * The type Timer which allows a task to be executed on the tick thread after a set delay either once or repeatetly.
  *
@@ -9,34 +11,38 @@ package bt2d.utils.timer;
 public class Timer
 {
     /**
+     * Conversion constant from nano seconds to seconds.
+     */
+    protected static final double NANO_TO_BASE = 1.0e9;
+    /**
      * The action that will be executed after the delay.
      */
-    private Runnable action;
+    protected Runnable action;
 
     /**
      * The time to wat until the execution of the set action in seconds.
      */
-    private double delay;
+    protected double delay;
 
     /**
      * The accumulated delta in seconds which is used to determine if the set delay has passed.
      */
-    private double deltaSum;
+    protected double deltaSum;
 
     /**
      * Indicates whether this timers action has been executed.
      */
-    private boolean executed;
+    protected boolean executed;
 
     /**
      * The current number of executions that this timer has already done.
      */
-    private int currentNumOfExecutions = 0;
+    protected int currentNumOfExecutions = 0;
 
     /**
      * The desired number of times this timers action should be executed. A negative value will mean that the timer will run indefinetely.
      */
-    private int desiredNmOfExecutions = 1;
+    protected int desiredNmOfExecutions = 1;
 
     /**
      * Instantiates a new Timer.
@@ -44,15 +50,15 @@ public class Timer
      * By default this timer would be executed once. See {@link #repeat(int)} to change this behavior.
      *
      * @param action the action to execute after the dealy
-     * @param delay  the delay in seconds.
+     * @param delay  the delay duration before the execution and between repeated executions.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
      */
-    public Timer(Runnable action, double delay)
+    public Timer(Runnable action, Duration delay)
     {
         this.action = action;
-        this.delay = delay;
+        this.delay = delay.getSeconds() + (delay.getNano() / NANO_TO_BASE);
     }
 
     /**

@@ -1,5 +1,6 @@
 package bt2d.utils.timer;
 
+import java.time.Duration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,14 +60,14 @@ public class TimerActions
      * its {@link Timer#isExecuted()} method returns true.
      *
      * @param action The action to execute after the given delay.
-     * @param delay  The delay in seconds before executing the given action.
+     * @param delay  The delay before executing the given action.
      *
      * @return The created timer instance.
      *
      * @author Lukas Hartwig
      * @since 04.11.2021
      */
-    public Timer once(Runnable action, double delay)
+    public Timer once(Runnable action, Duration delay)
     {
         Timer timer = new Timer(action, delay);
         add(timer);
@@ -85,7 +86,7 @@ public class TimerActions
      * its {@link Timer#isExecuted()} method returns true.
      *
      * @param action          The action to execute after the given delay.
-     * @param delay           The delay in seconds before executing the given action and between repeated actions.
+     * @param delay           The delay before executing the given action and between repeated actions.
      * @param numOfExecutions The number of executions before this timer counts as executed.
      *
      * @return The created timer instance.
@@ -93,7 +94,7 @@ public class TimerActions
      * @author Lukas Hartwig
      * @since 04.11.2021
      */
-    public Timer repeat(Runnable action, double delay, int numOfExecutions)
+    public Timer repeat(Runnable action, Duration delay, int numOfExecutions)
     {
         Timer timer = new Timer(action, delay).repeat(numOfExecutions);
         add(timer);
@@ -112,14 +113,14 @@ public class TimerActions
      * its {@link Timer#isExecuted()} method returns true which will not happen naturally.
      *
      * @param action The action to execute after the given delay.
-     * @param delay  The delay in seconds before executing the given action and between repeated actions.
+     * @param delay  The delay before executing the given action and between repeated actions.
      *
      * @return The created timer instance.
      *
      * @author Lukas Hartwig
      * @since 04.11.2021
      */
-    public Timer repeat(Runnable action, double delay)
+    public Timer repeat(Runnable action, Duration delay)
     {
         Timer timer = new Timer(action, delay).repeat();
         add(timer);
