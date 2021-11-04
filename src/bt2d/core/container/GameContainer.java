@@ -4,6 +4,8 @@ import bt.types.Killable;
 import bt2d.core.container.exc.GameContainerException;
 import bt2d.core.container.settings.GameContainerSettings;
 import bt2d.core.container.settings.exc.SettingsChangeException;
+import bt2d.core.input.key.KeyActions;
+import bt2d.core.input.key.KeyInput;
 import bt2d.core.loop.GameLoop;
 import bt2d.core.window.Window;
 import bt2d.utils.Unit;
@@ -51,6 +53,16 @@ public class GameContainer implements Runnable, Killable
     protected Unit height;
 
     /**
+     * A set of key actions that can be freely configured to setup global triggers.
+     */
+    protected KeyActions keyActions;
+
+    /**
+     * This containers key input instacne which is used to check pressed keys.
+     */
+    protected KeyInput keyInput;
+
+    /**
      * Instantiates a new Game container.
      *
      * @param settings the settings that will be bound by this container. Changes to the properties
@@ -62,6 +74,7 @@ public class GameContainer implements Runnable, Killable
     public GameContainer(GameContainerSettings settings)
     {
         this.settings = settings;
+        this.keyActions = new KeyActions();
     }
 
     /**
@@ -172,6 +185,19 @@ public class GameContainer implements Runnable, Killable
     }
 
     /**
+     * Creates the {@link KeyInput} instance of this container.
+     * <p>
+     * The setup instance will be available via {@link #getKeyInput()}.
+     *
+     * @author Lukas Hartwig
+     * @since 03.11.2021
+     */
+    protected void setupKeyInput()
+    {
+        this.keyInput = new KeyInput(this.window.getWindow());
+    }
+
+    /**
      * The tick method of this container.
      * <p>
      * This will check if the window needs to be closed and will forward tick calls scenes.
@@ -186,6 +212,9 @@ public class GameContainer implements Runnable, Killable
         // TODO forward tick call to scene
 
         glfwPollEvents();
+
+        this.keyInput.checkKeyChanges();
+        this.keyActions.checkActions(this.keyInput);
 
         if (this.window.isShouldClose())
         {
@@ -254,6 +283,7 @@ public class GameContainer implements Runnable, Killable
     {
         createWindow();
         bindSettings();
+        setupKeyInput();
 
         if (this.loop == null)
         {
@@ -311,5 +341,35 @@ public class GameContainer implements Runnable, Killable
     public Unit getHeight()
     {
         return height;
+    }
+
+    /**
+     * Returns a set of key actions that can be extended.
+     * <p>
+     * This can be used to add global key actions to this container.
+     *
+     * @return The key actions which were setup for this container.
+     *
+     * @author Lukas Hartwig
+     * @since 03.11.2021
+     */
+    public KeyActions getKeyActions()
+    {
+        return this.keyActions;
+    }
+
+    /**
+     * Gets {@link KeyInput} instance that was setup for this container.
+     * <p>
+     * The returned instance can be used to check if certain keys were pressed.
+     *
+     * @return The key input instance setup for this container.
+     *
+     * @author Lukas Hartwig
+     * @since 03.11.2021
+     */
+    public KeyInput getKeyInput()
+    {
+        return this.keyInput;
     }
 }
