@@ -106,6 +106,7 @@ public class Window implements Killable
         this.originalWidth = width;
         this.originalHeight = height;
 
+        glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
         glfwWindowHint(GLFW_DECORATED, undecorated ? GLFW_FALSE : GLFW_TRUE);
@@ -218,7 +219,7 @@ public class Window implements Killable
             {
                 xPos = 0;
                 yPos = 0;
-                glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), xPos, yPos, videoMode.width(), videoMode.height(), refreshRate);
+                glfwSetWindowMonitor(window, monitor, xPos, yPos, videoMode.width(), videoMode.height(), refreshRate);
                 height = videoMode.height();
                 width = videoMode.width();
             }
@@ -226,7 +227,7 @@ public class Window implements Killable
             {
                 xPos = (videoMode.width() - originalWidth) / 2;
                 yPos = (videoMode.height() - originalHeight) / 2;
-                glfwSetWindowMonitor(window, 0, xPos, yPos, originalWidth, originalHeight, 0);
+                glfwSetWindowMonitor(window, 0, xPos, yPos, originalWidth, originalHeight, refreshRate);
                 height = originalHeight;
                 width = originalWidth;
             }
@@ -363,6 +364,7 @@ public class Window implements Killable
     public void beforeRender()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0, 0, width, height);
     }
 
     /**

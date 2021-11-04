@@ -95,12 +95,10 @@ public class GameContainer implements Runnable, Killable
 
         this.settings.getWindowSize().onChange((width, height) -> {
             this.window.updateWindowSize(width, height);
-            this.settings.setPixelsPerUnit(width / this.width.units());
         });
 
         this.settings.getFullscreen().onChange(fullscreen -> {
             this.window.setFullScreenMode(fullscreen);
-            this.settings.setPixelsPerUnit(this.window.getWidth() / this.width.units());
         });
 
         this.settings.getPixelsPerUnit().onChange(ratio -> Unit.setRatio(ratio));
@@ -164,7 +162,7 @@ public class GameContainer implements Runnable, Killable
                                  this.settings.getTitle().get(),
                                  this.settings.getFullscreen().get(),
                                  this.settings.getUndecorated().get(),
-                                 0);
+                                 60);
 
         // set ratio based on settings and calculate unit size for this container
         Unit.setRatio(this.settings.getPixelsPerUnit().get());
@@ -252,6 +250,13 @@ public class GameContainer implements Runnable, Killable
         glBegin(GL_LINES);
         glVertex3f((float)getWidth().divideBy(2).pixels(), (float)getHeight().divideBy(2).pixels(), 0);
         glVertex3f((float)getWidth().divideBy(2).pixels(), (float)getHeight().pixels(), 0);
+        glEnd();
+
+        glBegin(GL_QUADS);
+        glVertex3d(getWidth().divideBy(3).pixels(), getHeight().divideBy(2).pixels(), 0);
+        glVertex3d(getWidth().divideBy(3).pixels(), getHeight().divideBy(3).pixels(), 0);
+        glVertex3d(getWidth().divideBy(2).pixels(), getHeight().divideBy(3).pixels(), 0);
+        glVertex3d(getWidth().divideBy(2).pixels(), getHeight().divideBy(2).pixels(), 0);
         glEnd();
 
         this.window.afterRender();
