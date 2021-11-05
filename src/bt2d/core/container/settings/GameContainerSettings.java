@@ -41,9 +41,9 @@ public class GameContainerSettings
     private ObservableProperty<Boolean> debugRendering;
 
     /**
-     * The ratio of pixels to unit. This value describes the amount of pixels that one {@link bt2d.utils.Unit} consists of.
+     * The width of the game in game units.
      */
-    private ObservableProperty<Double> pixelsPerUnit;
+    private ObservableProperty<Double> gameUnitWidth;
 
     /**
      * Instantiates a new Game container settings.
@@ -57,7 +57,7 @@ public class GameContainerSettings
     {
         this.windowSize = new ObservableBiProperty<>(0, 0);
         this.title = new ObservableProperty<>("Title");
-        this.pixelsPerUnit = new ObservableProperty<>(1.0);
+        this.gameUnitWidth = new ObservableProperty<>(100.0);
         this.undecorated = new ObservableProperty<>(false);
         this.fullscreen = new ObservableProperty<>(false);
         this.debugRendering = new ObservableProperty<>(false);
@@ -94,31 +94,31 @@ public class GameContainerSettings
     }
 
     /**
-     * Gets pixels per unit.
+     * Gets the amount of game units this game is wide.
      *
-     * @return the pixels per unit property.
+     * @return the game unit width property.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
      */
-    public ObservableProperty<Double> getPixelsPerUnit()
+    public ObservableProperty<Double> getGameUnitWidth()
     {
-        return this.pixelsPerUnit;
+        return this.gameUnitWidth;
     }
 
     /**
-     * Sets pixels per unit.
+     * Sets the amount of game units this game is wide.
      *
-     * @param pixelsPerUnit the amount of pixels one {@link bt2d.utils.Unit} consists of.
+     * @param gameUnitWidth
      *
      * @return This instance for chaining.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
      */
-    public GameContainerSettings setPixelsPerUnit(double pixelsPerUnit)
+    public GameContainerSettings setGameUnitWidth(double gameUnitWidth)
     {
-        this.pixelsPerUnit.set(pixelsPerUnit);
+        this.gameUnitWidth.set(gameUnitWidth);
         return this;
     }
 
