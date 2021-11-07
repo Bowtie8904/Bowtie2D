@@ -70,7 +70,7 @@ public class ObservableBiNumberProperty<T1 extends Number, T2 extends Number> ex
     }
 
     /**
-     * Defines a minimum required value (inclusive) for this properties value.
+     * Defines a minimum required value (inclusive) for this properties values.
      * <p>
      * If any set value is below the given value an exception will be thrown upon the next {@link #set(Number, Number)} call.
      * <p>
@@ -87,7 +87,7 @@ public class ObservableBiNumberProperty<T1 extends Number, T2 extends Number> ex
     }
 
     /**
-     * Defines a maximum value (inclusive) for this properties value.
+     * Defines a maximum value (inclusive) for this properties values.
      * <p>
      * If any set value is above the given value an exception will be thrown upon the next {@link #set(Number, Number)} call.
      * <p>
@@ -104,7 +104,7 @@ public class ObservableBiNumberProperty<T1 extends Number, T2 extends Number> ex
     }
 
     /**
-     * Defines minumum and maximum values (both inclusive) for this properties value.
+     * Defines minumum and maximum values (both inclusive) for this properties values.
      * <p>
      * If any set value is below the given min or above the given max value an exception will be thrown upon the next {@link #set(Number, Number)} call.
      * <p>
@@ -112,8 +112,8 @@ public class ObservableBiNumberProperty<T1 extends Number, T2 extends Number> ex
      * <p>
      * This is just a convenience call for
      * <pre>
-     *     min1(min);
-     *     max1(max);
+     *     min(min);
+     *     max(max);
      * </pre>
      *
      * @param min the min
