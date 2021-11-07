@@ -1,6 +1,7 @@
 package bt2d.core.window;
 
 import bt.types.Killable;
+import bt.utils.Null;
 import org.lwjgl.glfw.GLFWVidMode;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -97,9 +98,19 @@ public class Window implements Killable
      */
     public Window(int width, int height, String title, boolean fullScreen, boolean undecorated, int refreshRate)
     {
+        if (width <= 0)
+        {
+            throw new IllegalArgumentException("Width has to be above 0");
+        }
+
+        if (height <= 0)
+        {
+            throw new IllegalArgumentException("Height has to be above 0");
+        }
+
         this.height = height;
         this.width = width;
-        this.windowTitle = title;
+        this.windowTitle = Null.nullValue(title, "");
         this.fullScreenMode = fullScreen;
         this.refreshRate = refreshRate;
         this.shouldClose = false;
@@ -113,7 +124,7 @@ public class Window implements Killable
 
         this.monitor = glfwGetPrimaryMonitor();
 
-        this.window = glfwCreateWindow(width, height, title, fullScreenMode ? monitor : 0, 0);
+        this.window = glfwCreateWindow(width, height, windowTitle, fullScreenMode ? monitor : 0, 0);
 
         if (window == 0)
         {

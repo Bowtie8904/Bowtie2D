@@ -1,7 +1,9 @@
 package bt2d.core.container.settings;
 
-import bt2d.utils.ObservableBiProperty;
-import bt2d.utils.ObservableProperty;
+import bt2d.utils.property.ObservableBiNumberProperty;
+import bt2d.utils.property.ObservableBiProperty;
+import bt2d.utils.property.ObservableNumberProperty;
+import bt2d.utils.property.ObservableProperty;
 
 /**
  * The settings of a game container.
@@ -18,7 +20,7 @@ public class GameContainerSettings
      * <p>
      * The first value is the width, the second value is the height.
      */
-    private ObservableBiProperty<Integer, Integer> windowSize;
+    private ObservableBiNumberProperty<Integer, Integer> windowSize;
 
     /**
      * The title of the window.
@@ -43,7 +45,7 @@ public class GameContainerSettings
     /**
      * The width of the game in game units.
      */
-    private ObservableProperty<Double> gameUnitWidth;
+    private ObservableNumberProperty<Double> gameUnitWidth;
 
     /**
      * Instantiates a new Game container settings.
@@ -55,12 +57,26 @@ public class GameContainerSettings
      */
     public GameContainerSettings()
     {
-        this.windowSize = new ObservableBiProperty<>(0, 0);
+        this.windowSize = new ObservableBiNumberProperty<>(0, 0);
+        this.windowSize.nonNull();
+        this.windowSize.range1(1, Integer.MAX_VALUE);
+        this.windowSize.range2(1, Integer.MAX_VALUE);
+
         this.title = new ObservableProperty<>("Title");
-        this.gameUnitWidth = new ObservableProperty<>(100.0);
+        this.title.nonNull();
+
+        this.gameUnitWidth = new ObservableNumberProperty<>(100.0);
+        this.gameUnitWidth.nonNull();
+        this.gameUnitWidth.range(1.0, Double.MAX_VALUE);
+
         this.undecorated = new ObservableProperty<>(false);
+        this.undecorated.nonNull();
+
         this.fullscreen = new ObservableProperty<>(false);
+        this.fullscreen.nonNull();
+
         this.debugRendering = new ObservableProperty<>(false);
+        this.debugRendering.nonNull();
     }
 
     /**
@@ -78,6 +94,9 @@ public class GameContainerSettings
 
     /**
      * Sets window size in pixels.
+     * <p>
+     * Even if the window should be started in fullscreen these values are required
+     * to determine the desired aspect ratio of the game.
      *
      * @param width  the width of the window.
      * @param height the height of the window.
