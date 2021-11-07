@@ -59,8 +59,7 @@ public class GameContainerSettings
     {
         this.windowSize = new ObservableBiNumberProperty<>(0, 0);
         this.windowSize.nonNull();
-        this.windowSize.range1(1, Integer.MAX_VALUE);
-        this.windowSize.range2(1, Integer.MAX_VALUE);
+        this.windowSize.range(1, Integer.MAX_VALUE);
 
         this.title = new ObservableProperty<>("Title");
         this.title.nonNull();

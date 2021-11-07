@@ -12,24 +12,14 @@ package bt2d.utils.property;
 public class ObservableBiNumberProperty<T1 extends Number, T2 extends Number> extends ObservableBiProperty<T1, T2>
 {
     /**
-     * The minimum value for the first value of this property.
+     * The minimum value for the value of this property.
      */
-    protected T1 min1;
+    protected Number min;
 
     /**
-     * The maximum value for the first value of this property.
+     * The maximum value for the value of this property.
      */
-    protected T1 max1;
-
-    /**
-     * The minimum value for the second value of this property.
-     */
-    protected T2 min2;
-
-    /**
-     * The maximum value for the second value of this property.
-     */
-    protected T2 max2;
+    protected Number max;
 
     /**
      * Creates a new property instance and assigns the initial values.
@@ -80,7 +70,7 @@ public class ObservableBiNumberProperty<T1 extends Number, T2 extends Number> ex
     }
 
     /**
-     * Defines a minimum required value (inclusive) for this properties first value.
+     * Defines a minimum required value (inclusive) for this properties value.
      * <p>
      * If any set value is below the given value an exception will be thrown upon the next {@link #set(Number, Number)} call.
      * <p>
@@ -91,13 +81,13 @@ public class ObservableBiNumberProperty<T1 extends Number, T2 extends Number> ex
      * @author Lukas Hartwig
      * @since 07.11.2021
      */
-    public void min1(T1 min)
+    public void min(Number min)
     {
-        this.min1 = min;
+        this.min = min;
     }
 
     /**
-     * Defines a maximum value (inclusive) for this properties first value.
+     * Defines a maximum value (inclusive) for this properties value.
      * <p>
      * If any set value is above the given value an exception will be thrown upon the next {@link #set(Number, Number)} call.
      * <p>
@@ -108,47 +98,13 @@ public class ObservableBiNumberProperty<T1 extends Number, T2 extends Number> ex
      * @author Lukas Hartwig
      * @since 07.11.2021
      */
-    public void max1(T1 max)
+    public void max(Number max)
     {
-        this.max1 = max;
+        this.max = max;
     }
 
     /**
-     * Defines a minimum required value (inclusive) for this properties second value.
-     * <p>
-     * If any set value is below the given value an exception will be thrown upon the next {@link #set(Number, Number)} call.
-     * <p>
-     * Note: The check is not performed for null values, meaning null is always within accepted bounds unless {@link #nonNull()} was called.
-     *
-     * @param min the min
-     *
-     * @author Lukas Hartwig
-     * @since 07.11.2021
-     */
-    public void min2(T2 min)
-    {
-        this.min2 = min;
-    }
-
-    /**
-     * Defines a maximum value (inclusive) for this properties second value.
-     * <p>
-     * If any set value is above the given value an exception will be thrown upon the next {@link #set(Number, Number)} call.
-     * <p>
-     * Note: The check is not performed for null values, meaning null is always within accepted bounds unless {@link #nonNull()} was called.
-     *
-     * @param max the max
-     *
-     * @author Lukas Hartwig
-     * @since 07.11.2021
-     */
-    public void max2(T2 max)
-    {
-        this.max2 = max;
-    }
-
-    /**
-     * Defines minumum and maximum values (both inclusive) for this properties first value.
+     * Defines minumum and maximum values (both inclusive) for this properties value.
      * <p>
      * If any set value is below the given min or above the given max value an exception will be thrown upon the next {@link #set(Number, Number)} call.
      * <p>
@@ -166,35 +122,10 @@ public class ObservableBiNumberProperty<T1 extends Number, T2 extends Number> ex
      * @author Lukas Hartwig
      * @since 07.11.2021
      */
-    public void range1(T1 min, T1 max)
+    public void range(Number min, Number max)
     {
-        min1(min);
-        max1(max);
-    }
-
-    /**
-     * Defines minumum and maximum values (both inclusive) for this properties second value.
-     * <p>
-     * If any set value is below the given min or above the given max value an exception will be thrown upon the next {@link #set(Number, Number)} call.
-     * <p>
-     * Note: The check is not performed for null values, meaning null is always within accepted bounds unless {@link #nonNull()} was called.
-     * <p>
-     * This is just a convenience call for
-     * <pre>
-     *     min2(min);
-     *     max2(max);
-     * </pre>
-     *
-     * @param min the min
-     * @param max the max
-     *
-     * @author Lukas Hartwig
-     * @since 07.11.2021
-     */
-    public void range2(T2 min, T2 max)
-    {
-        min2(min);
-        max2(max);
+        min(min);
+        max(max);
     }
 
     /**
@@ -208,16 +139,18 @@ public class ObservableBiNumberProperty<T1 extends Number, T2 extends Number> ex
      */
     protected void checkMinBounds(T1 newValue1, T2 newValue2)
     {
-        if (newValue1 != null && this.min1 != null && newValue1.doubleValue() < this.min1.doubleValue())
+        if (newValue1 != null && this.min != null)
         {
-            throw new IllegalArgumentException("New property first value [" + newValue1 + "] is lower " +
-                                                       "than the defined minimum value [" + this.min1 + "]");
-        }
-
-        if (newValue2 != null && this.min2 != null && newValue2.doubleValue() < this.min2.doubleValue())
-        {
-            throw new IllegalArgumentException("New property second value [" + newValue2 + "] is lower " +
-                                                       "than the defined minimum value [" + this.min2 + "]");
+            if (newValue1.doubleValue() < this.min.doubleValue())
+            {
+                throw new IllegalArgumentException("New property first value [" + newValue1 + "] is lower " +
+                                                           "than the defined minimum value [" + this.min + "]");
+            }
+            else if (newValue2.doubleValue() < this.min.doubleValue())
+            {
+                throw new IllegalArgumentException("New property second value [" + newValue2 + "] is lower " +
+                                                           "than the defined minimum value [" + this.min + "]");
+            }
         }
     }
 
@@ -232,16 +165,18 @@ public class ObservableBiNumberProperty<T1 extends Number, T2 extends Number> ex
      */
     protected void checkMaxBounds(T1 newValue1, T2 newValue2)
     {
-        if (newValue1 != null && this.max1 != null && newValue1.doubleValue() > this.max1.doubleValue())
+        if (newValue1 != null && this.max != null)
         {
-            throw new IllegalArgumentException("New property first value [" + newValue1 + "] is higher " +
-                                                       "than the defined maximum value [" + this.max1 + "]");
-        }
-
-        if (newValue2 != null && this.max2 != null && newValue2.doubleValue() > this.max2.doubleValue())
-        {
-            throw new IllegalArgumentException("New property second value [" + newValue2 + "] is higher " +
-                                                       "than the defined maximum value [" + this.max2 + "]");
+            if (newValue1.doubleValue() > this.max.doubleValue())
+            {
+                throw new IllegalArgumentException("New property first value [" + newValue1 + "] is higher " +
+                                                           "than the defined maximum value [" + this.max + "]");
+            }
+            else if (newValue2.doubleValue() > this.max.doubleValue())
+            {
+                throw new IllegalArgumentException("New property second value [" + newValue2 + "] is higher " +
+                                                           "than the defined maximum value [" + this.max + "]");
+            }
         }
     }
 }
