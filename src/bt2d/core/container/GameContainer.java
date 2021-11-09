@@ -10,7 +10,6 @@ import bt2d.core.loop.GameLoop;
 import bt2d.core.window.Window;
 import bt2d.utils.Unit;
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
@@ -105,6 +104,10 @@ public class GameContainer implements Runnable, Killable
             this.window.setMaximized(maximized);
         });
 
+        this.settings.getStrictAspectRatio().onChange(strictAspectRatio -> {
+            this.window.setStrictAspectRatio(strictAspectRatio);
+        });
+
         this.settings.getGameUnitWidth().onChange(gameUnits -> Unit.setRatio(this.window.getWidth() / gameUnits));
     }
 
@@ -166,8 +169,8 @@ public class GameContainer implements Runnable, Killable
                                  this.settings.getTitle().get(),
                                  this.settings.getFullscreen().get(),
                                  this.settings.getUndecorated().get(),
+                                 this.settings.getStrictAspectRatio().get(),
                                  60);
-
 
         this.window.setMaximized(this.settings.getMaximized().get());
 

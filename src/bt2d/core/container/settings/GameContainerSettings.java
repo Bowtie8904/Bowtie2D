@@ -48,6 +48,11 @@ public class GameContainerSettings
     private ObservableProperty<Boolean> debugRendering;
 
     /**
+     * Indicates whether the window should keep its initial aspect ratio or stretch its contents to frame size.
+     */
+    private ObservableProperty<Boolean> strictAspectRatio;
+
+    /**
      * The width of the game in game units.
      */
     private ObservableNumberProperty<Double> gameUnitWidth;
@@ -81,6 +86,9 @@ public class GameContainerSettings
 
         this.maximize = new ObservableProperty<>(false);
         this.maximize.nonNull();
+
+        this.strictAspectRatio = new ObservableProperty<>(true);
+        this.strictAspectRatio.nonNull();
 
         this.debugRendering = new ObservableProperty<>(false);
         this.debugRendering.nonNull();
@@ -203,6 +211,35 @@ public class GameContainerSettings
     public GameContainerSettings setUndecorated(boolean undecorated)
     {
         this.undecorated.set(undecorated);
+        return this;
+    }
+
+    /**
+     * Indicates whether the window should keep its initial aspect ratio or stretch its contents to frame size.
+     *
+     * @return true if the window will keep its aspect ratio, false otherwise.
+     *
+     * @author Lukas Hartwig
+     * @since 09.11.2021
+     */
+    public ObservableProperty<Boolean> getStrictAspectRatio()
+    {
+        return this.strictAspectRatio;
+    }
+
+    /**
+     * Sets whether the window should keep its initial aspect ratio or stretch its contents to frame size.
+     *
+     * @param strictAspectRatio true if the window should keep its aspect ratio.
+     *
+     * @return This instance for chaining.
+     *
+     * @author Lukas Hartwig
+     * @since 09.11.2021
+     */
+    public GameContainerSettings setStrictAspectRatio(boolean strictAspectRatio)
+    {
+        this.strictAspectRatio.set(strictAspectRatio);
         return this;
     }
 
