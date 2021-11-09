@@ -257,7 +257,7 @@ public class GameContainerSettings
      * In maximized mode the window would still have the operating system specific border,
      * while in fullscreen the game content will fill the entire screen.
      *
-     * @param fullscreen true if the window should be maximized, false otherwise.
+     * @param maximize true if the window should be maximized, false otherwise.
      *
      * @return This instance for chaining.
      *
