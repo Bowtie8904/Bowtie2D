@@ -11,7 +11,6 @@ import bt2d.core.window.Window;
 import bt2d.utils.Unit;
 import bt2d.utils.timer.TimerActions;
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
@@ -102,15 +101,21 @@ public class GameContainer implements Runnable, Killable
 
         this.settings.getWindowSize().onChange((width, height) -> {
             this.window.updateWindowSize(width, height);
-            this.settings.setPixelsPerUnit(width / this.width.units());
         });
 
         this.settings.getFullscreen().onChange(fullscreen -> {
             this.window.setFullScreenMode(fullscreen);
-            this.settings.setPixelsPerUnit(this.window.getWidth() / this.width.units());
         });
 
-        this.settings.getPixelsPerUnit().onChange(ratio -> Unit.setRatio(ratio));
+        this.settings.getMaximized().onChange(maximized -> {
+            this.window.setMaximized(maximized);
+        });
+
+        this.settings.getStrictAspectRatio().onChange(strictAspectRatio -> {
+            this.window.setStrictAspectRatio(strictAspectRatio);
+        });
+
+        this.settings.getGameUnitWidth().onChange(gameUnits -> Unit.setRatio(this.window.getWidth() / gameUnits));
     }
 
     /**
@@ -171,21 +176,23 @@ public class GameContainer implements Runnable, Killable
                                  this.settings.getTitle().get(),
                                  this.settings.getFullscreen().get(),
                                  this.settings.getUndecorated().get(),
-                                 0);
+                                 this.settings.getStrictAspectRatio().get(),
+                                 60);
+
+        this.window.setMaximized(this.settings.getMaximized().get());
 
         // set ratio based on settings and calculate unit size for this container
-        Unit.setRatio(this.settings.getPixelsPerUnit().get());
-        this.width = Unit.forPixels(this.window.getWidth());
-        this.height = Unit.forPixels(this.window.getHeight());
+        Unit.setRatio(this.window.getWidth() / this.settings.getGameUnitWidth().get());
+        this.width = Unit.forGlUnits(this.window.getWidth());
+        this.height = Unit.forGlUnits(this.window.getHeight());
 
         this.window.showWindow();
 
-        GL.createCapabilities();
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         glOrtho(0.f,
-                getWidth().pixels(),
-                getHeight().pixels(),
+                getWidth().glUnits(),
+                getHeight().glUnits(),
                 0.f,
                 0.f,
                 1.f);
@@ -245,21 +252,39 @@ public class GameContainer implements Runnable, Killable
         this.window.beforeRender();
 
         // TODO remove test rendering
-        glColor4f(1, 0, 0, 0);
+        glColor4f(0, 0, 1, 0);
 
         glBegin(GL_LINES);
         glVertex3f(0, 0, 0);
-        glVertex3f((float)getWidth().divideBy(2).pixels(), (float)getHeight().divideBy(2).pixels(), 0);
+        glVertex3f((float)getWidth().divideBy(2).glUnits(), (float)getHeight().divideBy(2).glUnits(), 0);
         glEnd();
 
         glBegin(GL_LINES);
-        glVertex3f((float)getWidth().units(), 0, 0);
-        glVertex3f((float)getWidth().divideBy(2).pixels(), (float)getHeight().divideBy(2).pixels(), 0);
+        glVertex3f((float)getWidth().glUnits(), 0, 0);
+        glVertex3f((float)getWidth().divideBy(2).glUnits(), (float)getHeight().divideBy(2).glUnits(), 0);
         glEnd();
 
         glBegin(GL_LINES);
-        glVertex3f((float)getWidth().divideBy(2).pixels(), (float)getHeight().divideBy(2).pixels(), 0);
-        glVertex3f((float)getWidth().divideBy(2).pixels(), (float)getHeight().pixels(), 0);
+        glVertex3f((float)getWidth().divideBy(2).glUnits(), (float)getHeight().divideBy(2).glUnits(), 0);
+        glVertex3f((float)getWidth().divideBy(2).glUnits(), (float)getHeight().glUnits(), 0);
+        glEnd();
+
+        glColor4f(1, 0, 0, 0);
+
+        glBegin(GL_QUADS);
+        glVertex3d(getWidth().divideBy(3).glUnits(), getHeight().divideBy(2).glUnits(), 0);
+        glVertex3d(getWidth().divideBy(3).glUnits(), getHeight().divideBy(3).glUnits(), 0);
+        glVertex3d(getWidth().divideBy(2).glUnits(), getHeight().divideBy(3).glUnits(), 0);
+        glVertex3d(getWidth().divideBy(2).glUnits(), getHeight().divideBy(2).glUnits(), 0);
+        glEnd();
+
+        glColor4f(0, 1, 0, 0);
+
+        glBegin(GL_QUADS);
+        glVertex3d(Unit.forGameUnits(10).glUnits(), Unit.forGameUnits(10).glUnits(), 0);
+        glVertex3d(Unit.forGameUnits(15).glUnits(), Unit.forGameUnits(10).glUnits(), 0);
+        glVertex3d(Unit.forGameUnits(10).glUnits(), Unit.forGameUnits(15).glUnits(), 0);
+        glVertex3d(Unit.forGameUnits(15).glUnits(), Unit.forGameUnits(15).glUnits(), 0);
         glEnd();
 
         this.window.afterRender();

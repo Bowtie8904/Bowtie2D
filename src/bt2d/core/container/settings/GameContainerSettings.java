@@ -1,7 +1,9 @@
 package bt2d.core.container.settings;
 
-import bt2d.utils.ObservableBiProperty;
-import bt2d.utils.ObservableProperty;
+import bt2d.utils.property.ObservableBiNumberProperty;
+import bt2d.utils.property.ObservableBiProperty;
+import bt2d.utils.property.ObservableNumberProperty;
+import bt2d.utils.property.ObservableProperty;
 
 /**
  * The settings of a game container.
@@ -18,7 +20,7 @@ public class GameContainerSettings
      * <p>
      * The first value is the width, the second value is the height.
      */
-    private ObservableBiProperty<Integer, Integer> windowSize;
+    private ObservableBiNumberProperty<Integer, Integer> windowSize;
 
     /**
      * The title of the window.
@@ -36,14 +38,24 @@ public class GameContainerSettings
     private ObservableProperty<Boolean> fullscreen;
 
     /**
+     * Indicates whether the window should be maximized.
+     */
+    private ObservableProperty<Boolean> maximize;
+
+    /**
      * Indicates whether additional debug rendering should be done.
      */
     private ObservableProperty<Boolean> debugRendering;
 
     /**
-     * The ratio of pixels to unit. This value describes the amount of pixels that one {@link bt2d.utils.Unit} consists of.
+     * Indicates whether the window should keep its initial aspect ratio or stretch its contents to frame size.
      */
-    private ObservableProperty<Double> pixelsPerUnit;
+    private ObservableProperty<Boolean> strictAspectRatio;
+
+    /**
+     * The width of the game in game units.
+     */
+    private ObservableNumberProperty<Double> gameUnitWidth;
 
     /**
      * Instantiates a new Game container settings.
@@ -55,12 +67,31 @@ public class GameContainerSettings
      */
     public GameContainerSettings()
     {
-        this.windowSize = new ObservableBiProperty<>(0, 0);
+        this.windowSize = new ObservableBiNumberProperty<>(0, 0);
+        this.windowSize.nonNull();
+        this.windowSize.range(1, Integer.MAX_VALUE);
+
         this.title = new ObservableProperty<>("Title");
-        this.pixelsPerUnit = new ObservableProperty<>(1.0);
+        this.title.nonNull();
+
+        this.gameUnitWidth = new ObservableNumberProperty<>(100.0);
+        this.gameUnitWidth.nonNull();
+        this.gameUnitWidth.range(1.0, Double.MAX_VALUE);
+
         this.undecorated = new ObservableProperty<>(false);
+        this.undecorated.nonNull();
+
         this.fullscreen = new ObservableProperty<>(false);
+        this.fullscreen.nonNull();
+
+        this.maximize = new ObservableProperty<>(false);
+        this.maximize.nonNull();
+
+        this.strictAspectRatio = new ObservableProperty<>(true);
+        this.strictAspectRatio.nonNull();
+
         this.debugRendering = new ObservableProperty<>(false);
+        this.debugRendering.nonNull();
     }
 
     /**
@@ -78,6 +109,9 @@ public class GameContainerSettings
 
     /**
      * Sets window size in pixels.
+     * <p>
+     * Even if the window should be started in fullscreen these values are required
+     * to determine the desired aspect ratio of the game.
      *
      * @param width  the width of the window.
      * @param height the height of the window.
@@ -94,31 +128,31 @@ public class GameContainerSettings
     }
 
     /**
-     * Gets pixels per unit.
+     * Gets the amount of game units this game is wide.
      *
-     * @return the pixels per unit property.
+     * @return the game unit width property.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
      */
-    public ObservableProperty<Double> getPixelsPerUnit()
+    public ObservableProperty<Double> getGameUnitWidth()
     {
-        return this.pixelsPerUnit;
+        return this.gameUnitWidth;
     }
 
     /**
-     * Sets pixels per unit.
+     * Sets the amount of game units this game is wide.
      *
-     * @param pixelsPerUnit the amount of pixels one {@link bt2d.utils.Unit} consists of.
+     * @param gameUnitWidth
      *
      * @return This instance for chaining.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
      */
-    public GameContainerSettings setPixelsPerUnit(double pixelsPerUnit)
+    public GameContainerSettings setGameUnitWidth(double gameUnitWidth)
     {
-        this.pixelsPerUnit.set(pixelsPerUnit);
+        this.gameUnitWidth.set(gameUnitWidth);
         return this;
     }
 
@@ -181,6 +215,35 @@ public class GameContainerSettings
     }
 
     /**
+     * Indicates whether the window should keep its initial aspect ratio or stretch its contents to frame size.
+     *
+     * @return true if the window will keep its aspect ratio, false otherwise.
+     *
+     * @author Lukas Hartwig
+     * @since 09.11.2021
+     */
+    public ObservableProperty<Boolean> getStrictAspectRatio()
+    {
+        return this.strictAspectRatio;
+    }
+
+    /**
+     * Sets whether the window should keep its initial aspect ratio or stretch its contents to frame size.
+     *
+     * @param strictAspectRatio true if the window should keep its aspect ratio.
+     *
+     * @return This instance for chaining.
+     *
+     * @author Lukas Hartwig
+     * @since 09.11.2021
+     */
+    public GameContainerSettings setStrictAspectRatio(boolean strictAspectRatio)
+    {
+        this.strictAspectRatio.set(strictAspectRatio);
+        return this;
+    }
+
+    /**
      * Indicates whether the window should be fullscreen.
      *
      * @return true if the window should be in fullscreen, false otherwise.
@@ -206,6 +269,41 @@ public class GameContainerSettings
     public GameContainerSettings setFullscreen(boolean fullscreen)
     {
         this.fullscreen.set(fullscreen);
+        return this;
+    }
+
+    /**
+     * Indicates whether the window should be maximized.
+     * <p>
+     * In maximized mode the window would still have the operating system specific border,
+     * while in fullscreen the game content will fill the entire screen.
+     *
+     * @return true if the window should be maximized, false otherwise.
+     *
+     * @author Lukas Hartwig
+     * @since 09.11.2021
+     */
+    public ObservableProperty<Boolean> getMaximized()
+    {
+        return this.maximize;
+    }
+
+    /**
+     * Sets whether the window should be maximized.
+     * <p>
+     * In maximized mode the window would still have the operating system specific border,
+     * while in fullscreen the game content will fill the entire screen.
+     *
+     * @param maximize true if the window should be maximized, false otherwise.
+     *
+     * @return This instance for chaining.
+     *
+     * @author Lukas Hartwig
+     * @since 09.11.2021
+     */
+    public GameContainerSettings setMaximized(boolean maximize)
+    {
+        this.maximize.set(maximize);
         return this;
     }
 

@@ -1,4 +1,6 @@
-package bt2d.utils;
+package bt2d.utils.property;
+
+import bt2d.utils.QuadConsumer;
 
 import java.util.function.BiConsumer;
 
@@ -29,6 +31,11 @@ public class ObservableBiProperty<T1, T2>
      * The first value of this property.
      */
     protected T1 value1;
+
+    /**
+     * Indicates whether the values of this property have to be non-null.
+     */
+    protected boolean requireNonNull;
 
     /**
      * The second value of this property.
@@ -72,13 +79,45 @@ public class ObservableBiProperty<T1, T2>
      */
     public void set(T1 newValue1, T2 newValue2)
     {
+        checkNonNull(newValue1, newValue2);
+
+        this.value1 = newValue1;
+        this.value2 = newValue2;
+        notifyListener(newValue1, newValue2);
+    }
+
+    /**
+     * Notifies the set listener (if there is any) and passes the new values.
+     *
+     * @param newValue1 the new value 1
+     * @param newValue2 the new value 2
+     *
+     * @author Lukas Hartwig
+     * @since 07.11.2021
+     */
+    protected void notifyListener(T1 newValue1, T2 newValue2)
+    {
         if (this.onChange != null)
         {
             this.onChange.accept(this.value1, newValue1, this.value2, newValue2);
         }
+    }
 
-        this.value1 = newValue1;
-        this.value2 = newValue2;
+    /**
+     * Checks if this property requires non-null values. If so checks if the given values are non-null.
+     *
+     * @param newValue1 the new value 1
+     * @param newValue2 the new value 2
+     *
+     * @author Lukas Hartwig
+     * @since 07.11.2021
+     */
+    protected void checkNonNull(T1 newValue1, T2 newValue2)
+    {
+        if (this.requireNonNull && (newValue1 == null || newValue2 == null))
+        {
+            throw new IllegalArgumentException("Property requires non-null values");
+        }
     }
 
     /**
@@ -135,5 +174,19 @@ public class ObservableBiProperty<T1, T2>
     public void onChange(QuadConsumer<T1, T1, T2, T2> onChange)
     {
         this.onChange = (oldValue1, newValue1, oldValue2, newValue2) -> onChange.accept(oldValue1, newValue1, oldValue2, newValue2);
+    }
+
+    /**
+     * Sets that this property requires its values to be non-null.
+     * <p>
+     * Any values passed to {@link #set(Object, Object)} after this call will be checked.
+     * If a null value is encountered then an {@link IllegalArgumentException} will be thrown.
+     *
+     * @author Lukas Hartwig
+     * @since 07.11.2021
+     */
+    public void nonNull()
+    {
+        this.requireNonNull = true;
     }
 }
