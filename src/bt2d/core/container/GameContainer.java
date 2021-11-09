@@ -101,6 +101,11 @@ public class GameContainer implements Runnable, Killable
             this.window.setFullScreenMode(fullscreen);
         });
 
+        this.settings.getMaximized().onChange(maximized -> {
+            // TODO uncomment
+            //this.window.setMaximized(maximized);
+        });
+
         this.settings.getGameUnitWidth().onChange(gameUnits -> Unit.setRatio(this.window.getWidth() / gameUnits));
     }
 
@@ -163,6 +168,9 @@ public class GameContainer implements Runnable, Killable
                                  this.settings.getFullscreen().get(),
                                  this.settings.getUndecorated().get(),
                                  60);
+
+        // TODO uncomment
+        // this.window.setMaximized(this.settings.getMaximized().get());
 
         // set ratio based on settings and calculate unit size for this container
         Unit.setRatio(this.window.getWidth() / this.settings.getGameUnitWidth().get());

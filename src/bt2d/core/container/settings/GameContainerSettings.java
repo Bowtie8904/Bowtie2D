@@ -38,6 +38,11 @@ public class GameContainerSettings
     private ObservableProperty<Boolean> fullscreen;
 
     /**
+     * Indicates whether the window should be maximized.
+     */
+    private ObservableProperty<Boolean> maximize;
+
+    /**
      * Indicates whether additional debug rendering should be done.
      */
     private ObservableProperty<Boolean> debugRendering;
@@ -73,6 +78,9 @@ public class GameContainerSettings
 
         this.fullscreen = new ObservableProperty<>(false);
         this.fullscreen.nonNull();
+
+        this.maximize = new ObservableProperty<>(false);
+        this.maximize.nonNull();
 
         this.debugRendering = new ObservableProperty<>(false);
         this.debugRendering.nonNull();
@@ -224,6 +232,41 @@ public class GameContainerSettings
     public GameContainerSettings setFullscreen(boolean fullscreen)
     {
         this.fullscreen.set(fullscreen);
+        return this;
+    }
+
+    /**
+     * Indicates whether the window should be maximized.
+     * <p>
+     * In maximized mode the window would still have the operating system specific border,
+     * while in fullscreen the game content will fill the entire screen.
+     *
+     * @return true if the window should be maximized, false otherwise.
+     *
+     * @author Lukas Hartwig
+     * @since 09.11.2021
+     */
+    public ObservableProperty<Boolean> getMaximized()
+    {
+        return this.maximize;
+    }
+
+    /**
+     * Sets whether the window should be maximized.
+     * <p>
+     * In maximized mode the window would still have the operating system specific border,
+     * while in fullscreen the game content will fill the entire screen.
+     *
+     * @param fullscreen true if the window should be maximized, false otherwise.
+     *
+     * @return This instance for chaining.
+     *
+     * @author Lukas Hartwig
+     * @since 09.11.2021
+     */
+    public GameContainerSettings setMaximized(boolean maximize)
+    {
+        this.maximize.set(maximize);
         return this;
     }
 
