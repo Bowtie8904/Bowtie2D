@@ -9,6 +9,7 @@ import bt2d.core.input.key.KeyInput;
 import bt2d.core.loop.GameLoop;
 import bt2d.core.window.Window;
 import bt2d.utils.Unit;
+import bt2d.utils.timer.TimerActions;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
@@ -63,6 +64,11 @@ public class GameContainer implements Runnable, Killable
     protected KeyInput keyInput;
 
     /**
+     * A set of timer actions that can be freely configured to setup global delay based triggers.
+     */
+    protected TimerActions timerActions;
+
+    /**
      * Instantiates a new Game container.
      *
      * @param settings the settings that will be bound by this container. Changes to the properties
@@ -75,6 +81,7 @@ public class GameContainer implements Runnable, Killable
     {
         this.settings = settings;
         this.keyActions = new KeyActions();
+        this.timerActions = new TimerActions();
     }
 
     /**
@@ -215,6 +222,7 @@ public class GameContainer implements Runnable, Killable
 
         this.keyInput.checkKeyChanges();
         this.keyActions.checkActions(this.keyInput);
+        this.timerActions.checkActions(delta);
 
         if (this.window.isShouldClose())
         {
@@ -371,5 +379,20 @@ public class GameContainer implements Runnable, Killable
     public KeyInput getKeyInput()
     {
         return this.keyInput;
+    }
+
+    /**
+     * Returns a set of timer actions that can be extended.
+     * <p>
+     * This can be used to add global delay based actions to this container which will be executed on the main thread.
+     *
+     * @return The timer actions which were setup for this container.
+     *
+     * @author Lukas Hartwig
+     * @since 04.11.2021
+     */
+    public TimerActions getTimerActions()
+    {
+        return this.timerActions;
     }
 }
