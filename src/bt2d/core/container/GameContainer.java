@@ -1,5 +1,6 @@
 package bt2d.core.container;
 
+import bt.scheduler.Threads;
 import bt.types.Killable;
 import bt2d.core.container.exc.GameContainerException;
 import bt2d.core.container.settings.GameContainerSettings;
@@ -7,10 +8,17 @@ import bt2d.core.container.settings.exc.SettingsChangeException;
 import bt2d.core.input.key.KeyActions;
 import bt2d.core.input.key.KeyInput;
 import bt2d.core.loop.GameLoop;
+import bt2d.core.scene.Scene;
+import bt2d.core.scene.obj.ScenePair;
 import bt2d.core.window.Window;
+import bt2d.resource.load.exc.LoadException;
 import bt2d.utils.Unit;
 import bt2d.utils.timer.TimerActions;
 import org.lwjgl.glfw.GLFWErrorCallback;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
@@ -68,19 +76,41 @@ public class GameContainer implements Runnable, Killable
     protected TimerActions timerActions;
 
     /**
+     * The currently active scene.
+     */
+    protected Scene currentScene;
+
+    /**
+     * The name of the requested scene if there is any.
+     */
+    protected String requestedSceneName;
+
+    /**
+     * Indicates whether a new scene was requested and should be loaded.
+     */
+    protected boolean sceneRequested;
+
+    /**
+     * A mapping of scenes to unique names. The entries will hold the main scene and an
+     * optional (may be null) loading scene.
+     */
+    protected Map<String, ScenePair> scenes;
+
+    /**
      * Instantiates a new Game container.
      *
-     * @param settings the settings that will be bound by this container. Changes to the properties
-     *                 of this settings instance will be reflected by the container.
+     * @param settings the settings that will be bound by this container. Changes to the properties                 of this settings instance will be reflected by the container.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
      */
     public GameContainer(GameContainerSettings settings)
     {
+        Objects.requireNonNull(settings, "settings cant be null");
         this.settings = settings;
         this.keyActions = new KeyActions();
         this.timerActions = new TimerActions();
+        this.scenes = new HashMap<>();
     }
 
     /**
@@ -124,8 +154,7 @@ public class GameContainer implements Runnable, Killable
      * Changes to this settings instances properties will be reflected by this container.
      * I.e. changing the properties for the window size will resize the window of the container.
      *
-     * @return the settings instance that was given to this container and
-     * whichs properties are reflected by this instance.
+     * @return the settings instance that was given to this container and whichs properties are reflected by this instance.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
@@ -146,6 +175,8 @@ public class GameContainer implements Runnable, Killable
      */
     public void setGameLoop(GameLoop loop)
     {
+        Objects.requireNonNull(loop, "loop cant be null");
+
         // already set loop is currently running, should not just replace
         if (this.loop != null && this.loop.isRunning())
         {
@@ -179,12 +210,12 @@ public class GameContainer implements Runnable, Killable
                                  this.settings.getStrictAspectRatio().get(),
                                  60);
 
-        this.window.setMaximized(this.settings.getMaximized().get());
-
         // set ratio based on settings and calculate unit size for this container
         Unit.setRatio(this.window.getWidth() / this.settings.getGameUnitWidth().get());
         this.width = Unit.forGlUnits(this.window.getWidth());
         this.height = Unit.forGlUnits(this.window.getHeight());
+
+        this.window.setMaximized(this.settings.getMaximized().get());
 
         this.window.showWindow();
 
@@ -223,13 +254,34 @@ public class GameContainer implements Runnable, Killable
      */
     public void tick(double delta)
     {
-        // TODO forward tick call to scene
+        // if a new scene was requested switch now
+        // to avoid complications during the current process and the killing of the old scene at the same time
+        if (this.sceneRequested)
+        {
+            try
+            {
+                loadScene(this.requestedSceneName);
+            }
+            catch (LoadException e)
+            {
+                e.printStackTrace();
+                kill();
+                return;
+            }
+
+            this.sceneRequested = false;
+        }
 
         glfwPollEvents();
 
         this.keyInput.checkKeyChanges();
         this.keyActions.checkActions(this.keyInput);
         this.timerActions.checkActions(delta);
+
+        if (this.currentScene != null)
+        {
+            this.currentScene.tick(delta);
+        }
 
         if (this.window.isShouldClose())
         {
@@ -247,9 +299,12 @@ public class GameContainer implements Runnable, Killable
      */
     public void render()
     {
-        // TODO forward render call to scene
-
         this.window.beforeRender();
+
+        if (this.currentScene != null)
+        {
+            this.currentScene.render(this.settings.getDebugRendering().get());
+        }
 
         // TODO remove test rendering
         glColor4f(0, 0, 1, 0);
@@ -419,5 +474,175 @@ public class GameContainer implements Runnable, Killable
     public TimerActions getTimerActions()
     {
         return this.timerActions;
+    }
+
+    /**
+     * Requests a new scene to be loaded after the current render iteration.
+     *
+     * <p>
+     * This will cause the container to properly {@link Scene#kill() kill} the current scene. The new main scene will be
+     * loaded in a different thread. During the loading of the main scene the set loading scene is played (if it
+     * exists).
+     * </p>
+     *
+     * @param sceneName The name of the scene that it was mapped by.
+     *
+     * @author Lukas Hartwig
+     * @since 10.11.2021
+     */
+    public void requestScene(String sceneName)
+    {
+        Objects.requireNonNull(sceneName, "sceneName cant be null");
+
+        this.requestedSceneName = sceneName;
+        this.sceneRequested = true;
+    }
+
+    /**
+     * Loads the {@link Scene} to be displayed. This will properly {@link Scene#kill() kill} the current scene. The new
+     * main scene will be loaded in a different thread. During the loading of the main scene the set loading scene is
+     * played (if it exists).
+     *
+     * @param name The name of the scene that should be played.
+     *
+     * @throws LoadException If there is no mapping for the scene or anything goes wrong during the loading process.
+     * @author Lukas Hartwig
+     * @since 10.11.2021
+     */
+    protected void loadScene(String name) throws LoadException
+    {
+        Objects.requireNonNull(name, "name cant be null");
+
+        ScenePair pair = this.scenes.get(name);
+
+        if (pair == null)
+        {
+            // no mapping for given name
+            throw new LoadException("Cant find mapped scene for name '" + name + "'");
+        }
+
+        Scene mainScene = pair.getMainScene();
+        Scene loadingScene = pair.getLoadingScene();
+
+        if (loadingScene != null)
+        {
+            loadScene(loadingScene, name);
+        }
+
+        Threads.get().executeCached(() -> {
+            try
+            {
+                loadScene(mainScene, name);
+            }
+            catch (LoadException e)
+            {
+                e.printStackTrace();
+                kill();
+            }
+        });
+    }
+
+    /**
+     * Loads the given scene, sets it asctive and starts it.
+     *
+     * @param scene       the scene
+     * @param contextName the context name that is passed to the scenes load method.
+     *
+     * @author Lukas Hartwig
+     * @since 10.11.2021
+     */
+    protected void loadScene(Scene scene, String contextName) throws LoadException
+    {
+        scene.load(contextName);
+        scene.onStart();
+        setScene(scene);
+    }
+
+    /**
+     * Sets the given scene. This kills the current scene if it does not equal the given one.
+     *
+     * @param scene the scene
+     *
+     * @author Lukas Hartwig
+     * @since 10.11.2021
+     */
+    protected void setScene(Scene scene)
+    {
+        Objects.requireNonNull(scene, "scene cant be null");
+
+        if (this.currentScene != null && !this.currentScene.equals(scene))
+        {
+            this.currentScene.kill();
+        }
+
+        this.currentScene = scene;
+    }
+
+    /**
+     * Adds the given main scene and loading scene and maps them to the given name.
+     *
+     * <p>
+     * The loading scene may be null. If it is not null it will be displayed while the main scene is loading.
+     * </p>
+     * The name needs to be used to request the scene via {@link #requestScene(String)}.
+     *
+     * @param name         the name that this scene will be mapped by.
+     * @param mainScene    the main scene
+     * @param loadingScene the loading scene that is displayed while the main scene is loaded.
+     *
+     * @author Lukas Hartwig
+     * @since 10.11.2021
+     */
+    public void addScene(String name, Scene mainScene, Scene loadingScene)
+    {
+        Objects.requireNonNull(name, "name cant be null");
+        Objects.requireNonNull(mainScene, "mainScene cant be null");
+
+        mainScene.setGameContainer(this);
+
+        if (loadingScene != null)
+        {
+            loadingScene.setGameContainer(this);
+        }
+
+        this.scenes.put(name, new ScenePair(mainScene,
+                                            loadingScene));
+    }
+
+    /**
+     * Adds the given scene and maps it to the given name.
+     * <p>
+     * The name needs to be used to request the scene via {@link #requestScene(String)}.
+     *
+     * <p>
+     * This is a convinience method for
+     *
+     * <pre>
+     * {@link #addScene(String, Scene, Scene) addScene(name, scene, null);}
+     * </pre>
+     * </p>
+     *
+     * @param name  the name that this scene will be mapped by.
+     * @param scene the scene
+     *
+     * @author Lukas Hartwig
+     * @since 10.11.2021
+     */
+    public void addScene(String name, Scene scene)
+    {
+        addScene(name, scene, null);
+    }
+
+    /**
+     * Gets currently active scene.
+     *
+     * @return the current scene
+     *
+     * @author Lukas Hartwig
+     * @since 10.11.2021
+     */
+    public Scene getCurrentScene()
+    {
+        return this.currentScene;
     }
 }
