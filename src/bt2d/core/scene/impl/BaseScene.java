@@ -1,11 +1,14 @@
 package bt2d.core.scene.impl;
 
+import bt.log.Log;
 import bt2d.core.container.GameContainer;
 import bt2d.core.scene.Scene;
 import bt2d.resource.load.exc.LoadException;
 
 /**
- * The type Base scene.
+ * A basic implementation of the {@link Scene} interface.
+ * <p>
+ * This implementation should be a sufficient base for most cases.
  *
  * @author Lukas Hartwig
  * @since 10.11.2021
@@ -15,23 +18,26 @@ public class BaseScene implements Scene
     protected GameContainer gameContainer;
 
     /**
-     * On start.
-     *
-     * @author Lukas Hartwig
-     * @since 10.11.2021
+     * @see Scene#onStart()
      */
     @Override
     public void onStart()
     {
-
+        Log.debug("Starting scene");
     }
 
+    /**
+     * @see Scene#getGameContainer()
+     */
     @Override
     public GameContainer getGameContainer()
     {
         return this.gameContainer;
     }
 
+    /**
+     * @see Scene#setGameContainer(GameContainer)
+     */
     @Override
     public void setGameContainer(GameContainer gameContainer)
     {
@@ -39,24 +45,16 @@ public class BaseScene implements Scene
     }
 
     /**
-     * Kill.
-     *
-     * @author Lukas Hartwig
-     * @since 10.11.2021
+     * @see Scene#kill()
      */
     @Override
     public void kill()
     {
-
+        Log.debug("Killing scene");
     }
 
     /**
-     * Render.
-     *
-     * @param debugRendering the debug rendering
-     *
-     * @author Lukas Hartwig
-     * @since 10.11.2021
+     * @see Scene#render(boolean)
      */
     @Override
     public void render(boolean debugRendering)
@@ -65,12 +63,7 @@ public class BaseScene implements Scene
     }
 
     /**
-     * Tick.
-     *
-     * @param delta the delta
-     *
-     * @author Lukas Hartwig
-     * @since 10.11.2021
+     * @see Scene#tick(double)
      */
     @Override
     public void tick(double delta)
@@ -79,17 +72,14 @@ public class BaseScene implements Scene
     }
 
     /**
-     * Load.
+     * Loads all relevant resources for this scene. The call will be forwarded to all concerned entities and handlers.
      *
-     * @param sceneContextName the scene context name
-     *
-     * @throws LoadException the load exception
-     * @author Lukas Hartwig
-     * @since 10.11.2021
+     * @see Scene#load(String)
      */
     @Override
     public void load(String sceneContextName) throws LoadException
     {
-
+        Log.entry(sceneContextName);
+        Log.exit();
     }
 }

@@ -1,5 +1,6 @@
 package bt2d.core.container;
 
+import bt.log.Log;
 import bt.scheduler.Threads;
 import bt.types.Killable;
 import bt2d.core.container.exc.GameContainerException;
@@ -123,29 +124,29 @@ public class GameContainer implements Runnable, Killable
      */
     protected void bindSettings()
     {
-        this.settings.getTitle().onChange(title -> this.window.setWindowTitle(title));
+        this.settings.getTitle().addChangeListener(title -> this.window.setWindowTitle(title));
 
-        this.settings.getUndecorated().onChange(undecorated -> {
+        this.settings.getUndecorated().addChangeListener(undecorated -> {
             throw new SettingsChangeException("Cant change undecorated property after the window was created");
         });
 
-        this.settings.getWindowSize().onChange((width, height) -> {
+        this.settings.getWindowSize().addChangeListener((width, height) -> {
             this.window.updateWindowSize(width, height);
         });
 
-        this.settings.getFullscreen().onChange(fullscreen -> {
+        this.settings.getFullscreen().addChangeListener(fullscreen -> {
             this.window.setFullScreenMode(fullscreen);
         });
 
-        this.settings.getMaximized().onChange(maximized -> {
+        this.settings.getMaximized().addChangeListener(maximized -> {
             this.window.setMaximized(maximized);
         });
 
-        this.settings.getStrictAspectRatio().onChange(strictAspectRatio -> {
+        this.settings.getStrictAspectRatio().addChangeListener(strictAspectRatio -> {
             this.window.setStrictAspectRatio(strictAspectRatio);
         });
 
-        this.settings.getGameUnitWidth().onChange(gameUnits -> Unit.setRatio(this.window.getWidth() / gameUnits));
+        this.settings.getGameUnitWidth().addChangeListener(gameUnits -> Unit.setRatio(this.window.getWidth() / gameUnits));
     }
 
     /**
@@ -264,7 +265,7 @@ public class GameContainer implements Runnable, Killable
             }
             catch (LoadException e)
             {
-                e.printStackTrace();
+                Log.error("Error during loading of requested scene", e);
                 kill();
                 return;
             }
@@ -354,6 +355,7 @@ public class GameContainer implements Runnable, Killable
     @Override
     public void kill()
     {
+        Log.debug("Killing GameContainer");
         this.loop.kill();
         this.window.kill();
     }
@@ -369,6 +371,7 @@ public class GameContainer implements Runnable, Killable
     @Override
     public void run()
     {
+        Log.entry();
         createWindow();
         bindSettings();
         setupKeyInput();
@@ -379,6 +382,7 @@ public class GameContainer implements Runnable, Killable
         }
 
         this.loop.run();
+        Log.exit();
     }
 
     /**
@@ -492,10 +496,12 @@ public class GameContainer implements Runnable, Killable
      */
     public void requestScene(String sceneName)
     {
+        Log.entry(sceneName);
         Objects.requireNonNull(sceneName, "sceneName cant be null");
 
         this.requestedSceneName = sceneName;
         this.sceneRequested = true;
+        Log.exit();
     }
 
     /**
@@ -511,6 +517,7 @@ public class GameContainer implements Runnable, Killable
      */
     protected void loadScene(String name) throws LoadException
     {
+        Log.entry(name);
         Objects.requireNonNull(name, "name cant be null");
 
         ScenePair pair = this.scenes.get(name);
@@ -536,10 +543,12 @@ public class GameContainer implements Runnable, Killable
             }
             catch (LoadException e)
             {
-                e.printStackTrace();
+                Log.error("Error during loading of main scene", e);
                 kill();
             }
         });
+
+        Log.exit();
     }
 
     /**
@@ -553,9 +562,11 @@ public class GameContainer implements Runnable, Killable
      */
     protected void loadScene(Scene scene, String contextName) throws LoadException
     {
+        Log.entry(scene, contextName);
         scene.load(contextName);
         scene.onStart();
         setScene(scene);
+        Log.exit();
     }
 
     /**
@@ -568,6 +579,7 @@ public class GameContainer implements Runnable, Killable
      */
     protected void setScene(Scene scene)
     {
+        Log.entry(scene);
         Objects.requireNonNull(scene, "scene cant be null");
 
         if (this.currentScene != null && !this.currentScene.equals(scene))
@@ -576,6 +588,8 @@ public class GameContainer implements Runnable, Killable
         }
 
         this.currentScene = scene;
+
+        Log.exit();
     }
 
     /**
@@ -595,6 +609,7 @@ public class GameContainer implements Runnable, Killable
      */
     public void addScene(String name, Scene mainScene, Scene loadingScene)
     {
+        Log.entry(name, mainScene, loadingScene);
         Objects.requireNonNull(name, "name cant be null");
         Objects.requireNonNull(mainScene, "mainScene cant be null");
 
@@ -607,6 +622,8 @@ public class GameContainer implements Runnable, Killable
 
         this.scenes.put(name, new ScenePair(mainScene,
                                             loadingScene));
+
+        Log.exit();
     }
 
     /**

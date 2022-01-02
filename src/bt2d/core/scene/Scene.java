@@ -24,7 +24,7 @@ import bt2d.resource.load.intf.Loadable;
 public interface Scene extends Tickable, Loadable, Killable
 {
     /**
-     * Called by the game container once this scene is fully loaded and righjt before
+     * Called by the game container once this scene is fully loaded and right before
      * it will be set as the active scene to receive tick and render calls.
      *
      * @author Lukas Hartwig

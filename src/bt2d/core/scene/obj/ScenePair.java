@@ -2,8 +2,12 @@ package bt2d.core.scene.obj;
 
 import bt2d.core.scene.Scene;
 
+import java.util.Objects;
+
 /**
- * The type Scene pair.
+ * Defines a collection of one or two scenes.
+ * <p>
+ * This class will hold a main scene and an optional loading scene.
  *
  * @author Lukas Hartwig
  * @since 10.11.2021
@@ -14,7 +18,7 @@ public class ScenePair
     private Scene loadingScene;
 
     /**
-     * Instantiates a new Scene pair.
+     * Instantiates a new ScenePair.
      *
      * @param mainScene    the main scene
      * @param loadingScene the loading scene
@@ -24,12 +28,13 @@ public class ScenePair
      */
     public ScenePair(Scene mainScene, Scene loadingScene)
     {
+        Objects.requireNonNull(mainScene, "mainScene may not be null");
         this.mainScene = mainScene;
         this.loadingScene = loadingScene;
     }
 
     /**
-     * Instantiates a new Scene pair.
+     * Instantiates a new ScenePair without a loading scene.
      *
      * @param mainScene the main scene
      *
@@ -42,7 +47,7 @@ public class ScenePair
     }
 
     /**
-     * Gets main scene.
+     * Gets the main scene.
      *
      * @return the main scene
      *
@@ -55,7 +60,7 @@ public class ScenePair
     }
 
     /**
-     * Gets loading scene.
+     * Gets the loading scene.
      *
      * @return the loading scene
      *
