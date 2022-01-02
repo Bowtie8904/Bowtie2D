@@ -2,6 +2,8 @@ package bt2d.utils.property;
 
 import bt2d.utils.QuadConsumer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 /**
@@ -10,7 +12,7 @@ import java.util.function.BiConsumer;
  * Usage:
  * <pre>
  *     ObservableBiProperty< Boolean, Integer> myProp = new ObservableBiProperty<>(true, 1);
- *     myProp.onChange((oldValue1, newValue1, oldValue2, newValue2) -> {
+ *     myProp.addChangeListener((oldValue1, newValue1, oldValue2, newValue2) -> {
  *                              System.out.println("Old value1: " + oldValue1 + "  new value1: " + newValue1);
  *                              System.out.println("Old value2: " + oldValue2 + "  new value2: " + newValue2);
  *                          });
@@ -23,9 +25,9 @@ import java.util.function.BiConsumer;
 public class ObservableBiProperty<T1, T2>
 {
     /**
-     * The change listener that will be notified when the {@link #set(Object, Object) set} method is called.
+     * The list of change listeners that will be notified when the {@link #set(Object, Object) set} method is called.
      */
-    protected QuadConsumer<T1, T1, T2, T2> onChange;
+    protected List<QuadConsumer<T1, T1, T2, T2>> onChangeListeners;
 
     /**
      * The first value of this property.
@@ -53,6 +55,7 @@ public class ObservableBiProperty<T1, T2>
      */
     public ObservableBiProperty(T1 value1, T2 value2)
     {
+        this();
         set(value1, value2);
     }
 
@@ -64,6 +67,7 @@ public class ObservableBiProperty<T1, T2>
      */
     public ObservableBiProperty()
     {
+        this.onChangeListeners = new ArrayList<>();
     }
 
     /**
@@ -83,11 +87,11 @@ public class ObservableBiProperty<T1, T2>
 
         this.value1 = newValue1;
         this.value2 = newValue2;
-        notifyListener(newValue1, newValue2);
+        notifyListeners(newValue1, newValue2);
     }
 
     /**
-     * Notifies the set listener (if there is any) and passes the new values.
+     * Notifies the set listeners (if there are any) and passes the new values.
      *
      * @param newValue1 the new value 1
      * @param newValue2 the new value 2
@@ -95,11 +99,14 @@ public class ObservableBiProperty<T1, T2>
      * @author Lukas Hartwig
      * @since 07.11.2021
      */
-    protected void notifyListener(T1 newValue1, T2 newValue2)
+    protected void notifyListeners(T1 newValue1, T2 newValue2)
     {
-        if (this.onChange != null)
+        if (this.onChangeListeners != null)
         {
-            this.onChange.accept(this.value1, newValue1, this.value2, newValue2);
+            for (var listener : this.onChangeListeners)
+            {
+                listener.accept(this.value1, newValue1, this.value2, newValue2);
+            }
         }
     }
 
@@ -147,20 +154,20 @@ public class ObservableBiProperty<T1, T2>
     }
 
     /**
-     * Sets a listener which will be notified about changes of this properties values.
+     * Adds a listener which will be notified about changes of this properties values.
      *
      * @param onChange A BiConsumer whichs first argument will be the new first value and whichs second argument will be the new second value.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
      */
-    public void onChange(BiConsumer<T1, T2> onChange)
+    public void addChangeListener(BiConsumer<T1, T2> onChange)
     {
-        this.onChange = (oldValue1, newValue1, oldValue2, newValue2) -> onChange.accept(newValue1, newValue2);
+        addChangeListener((oldValue1, newValue1, oldValue2, newValue2) -> onChange.accept(newValue1, newValue2));
     }
 
     /**
-     * Sets a listener which will be notified about changes of this properties values.
+     * Adds a listener which will be notified about changes of this properties values.
      *
      * @param onChange A QuadConsumer whichs arguments will be:
      *                 - old first value
@@ -171,9 +178,12 @@ public class ObservableBiProperty<T1, T2>
      * @author Lukas Hartwig
      * @since 02.11.2021
      */
-    public void onChange(QuadConsumer<T1, T1, T2, T2> onChange)
+    public void addChangeListener(QuadConsumer<T1, T1, T2, T2> onChange)
     {
-        this.onChange = (oldValue1, newValue1, oldValue2, newValue2) -> onChange.accept(oldValue1, newValue1, oldValue2, newValue2);
+        if (this.onChangeListeners != null)
+        {
+            this.onChangeListeners.add(onChange);
+        }
     }
 
     /**

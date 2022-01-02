@@ -121,7 +121,7 @@ public class ObservableNumberProperty<T extends Number> extends ObservableProper
         checkMaxBounds(newValue);
 
         this.value = newValue;
-        notifyListener(newValue);
+        notifyListeners(newValue);
     }
 
     /**
