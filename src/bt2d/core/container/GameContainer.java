@@ -3,6 +3,7 @@ package bt2d.core.container;
 import bt.log.Log;
 import bt.scheduler.Threads;
 import bt.types.Killable;
+import bt.utils.Null;
 import bt2d.core.container.exc.GameContainerException;
 import bt2d.core.container.settings.GameContainerSettings;
 import bt2d.core.container.settings.exc.SettingsChangeException;
@@ -79,17 +80,17 @@ public class GameContainer implements Runnable, Killable
     /**
      * The currently active scene.
      */
-    protected Scene currentScene;
+    protected volatile Scene currentScene;
 
     /**
      * The name of the requested scene if there is any.
      */
-    protected String requestedSceneName;
+    protected volatile String requestedSceneName;
 
     /**
      * Indicates whether a new scene was requested and should be loaded.
      */
-    protected boolean sceneRequested;
+    protected volatile boolean sceneRequested;
 
     /**
      * A mapping of scenes to unique names. The entries will hold the main scene and an
@@ -357,6 +358,7 @@ public class GameContainer implements Runnable, Killable
     public void kill()
     {
         Log.debug("Killing GameContainer");
+        Null.checkKill(this.currentScene);
         this.loop.kill();
         this.window.kill();
     }
@@ -553,7 +555,7 @@ public class GameContainer implements Runnable, Killable
     }
 
     /**
-     * Loads the given scene, sets it asctive and starts it.
+     * Loads the given scene, sets it as active and starts it.
      *
      * @param scene       the scene
      * @param contextName the context name that is passed to the scenes load method.
