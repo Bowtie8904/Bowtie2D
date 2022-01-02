@@ -100,7 +100,8 @@ public class GameContainer implements Runnable, Killable
     /**
      * Instantiates a new Game container.
      *
-     * @param settings the settings that will be bound by this container. Changes to the properties                 of this settings instance will be reflected by the container.
+     * @param settings the settings that will be bound by this container. Changes to the properties
+     *                 of this settings instance will be reflected by the container.
      *
      * @author Lukas Hartwig
      * @since 02.11.2021
