@@ -547,7 +547,7 @@ public class GameContainer implements Runnable, Killable
                 Log.error("Error during loading of main scene", e);
                 kill();
             }
-        });
+        }, "Load-" + name);
 
         Log.exit();
     }
