@@ -539,7 +539,7 @@ public class GameContainer implements Runnable, Killable
             loadScene(loadingScene, name);
         }
 
-        Threads.get().executeCached(() -> {
+        Threads.get().executeCachedDaemon(() -> {
             try
             {
                 loadScene(mainScene, name);
