@@ -16,13 +16,11 @@ import bt2d.core.window.Window;
 import bt2d.resource.load.exc.LoadException;
 import bt2d.utils.Unit;
 import bt2d.utils.timer.TimerActions;
-import org.lwjgl.glfw.GLFWErrorCallback;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -198,13 +196,6 @@ public class GameContainer implements Runnable, Killable
      */
     protected void createWindow()
     {
-        GLFWErrorCallback.createPrint(System.err).set();
-
-        if (!glfwInit())
-        {
-            throw new GameContainerException("Unable to initialize GLFW");
-        }
-
         this.window = new Window(this.settings.getWindowSize().getFirst(),
                                  this.settings.getWindowSize().getSecond(),
                                  this.settings.getTitle().get(),

@@ -5,6 +5,7 @@ import bt2d.utils.property.ObservableBiNumberProperty;
 import bt2d.utils.property.ObservableBiProperty;
 import bt2d.utils.property.ObservableNumberProperty;
 import bt2d.utils.property.ObservableProperty;
+import org.lwjgl.system.Configuration;
 
 /**
  * The settings of a game container.
@@ -57,6 +58,11 @@ public class GameContainerSettings
      * The width of the game in game units.
      */
     private ObservableNumberProperty<Double> gameUnitWidth;
+
+    /**
+     * Indicates whether additional debug logging should be done by LWJGL.
+     */
+    private ObservableProperty<Boolean> lwjglDebugLogging;
 
     /**
      * Instantiates a new Game container settings.
@@ -116,6 +122,13 @@ public class GameContainerSettings
         this.debugRendering.nonNull();
         this.debugRendering.addChangeListener((oldValue, newValue) -> {
             Log.debug("DebugRendering setting changed: {} -> {}", oldValue, newValue);
+        });
+
+        this.lwjglDebugLogging = new ObservableProperty<>(false);
+        this.lwjglDebugLogging.nonNull();
+        this.lwjglDebugLogging.addChangeListener((oldValue, newValue) -> {
+            Configuration.DEBUG.set(newValue);
+            Log.debug("LWJGLDebugLogging setting changed: {} -> {}", oldValue, newValue);
         });
     }
 
@@ -358,6 +371,35 @@ public class GameContainerSettings
     public GameContainerSettings setDebugRendering(boolean debugRendering)
     {
         this.debugRendering.set(debugRendering);
+        return this;
+    }
+
+    /**
+     * Indicates whether additional debug logging should be done by LWJGL.
+     *
+     * @return true if additional logging should be done, false otherwise.
+     *
+     * @author Lukas Hartwig
+     * @since 06.01.2022
+     */
+    public ObservableProperty<Boolean> getLWJGLDebugLogging()
+    {
+        return this.lwjglDebugLogging;
+    }
+
+    /**
+     * Sets whether additional debug logging should be done by LWJGL.
+     *
+     * @param debugLogging true if additional logging should be done, false otherwise.
+     *
+     * @return This instance for chaining.
+     *
+     * @author Lukas Hartwig
+     * @since 06.01.2022
+     */
+    public GameContainerSettings setLWJGLDebugLogging(boolean debugLogging)
+    {
+        this.lwjglDebugLogging.set(debugLogging);
         return this;
     }
 }
