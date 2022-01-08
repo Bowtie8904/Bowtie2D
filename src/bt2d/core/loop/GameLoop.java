@@ -1,5 +1,6 @@
 package bt2d.core.loop;
 
+import bt.log.Log;
 import bt.runtime.InstanceKiller;
 import bt.types.Killable;
 import bt.utils.Exceptions;
@@ -168,7 +169,7 @@ public class GameLoop implements Killable, Runnable
             InstanceKiller.unregister(this);
         }
 
-        System.out.println("Killing game loop.");
+        Log.debug("Killing game loop.");
         this.running = false;
     }
 

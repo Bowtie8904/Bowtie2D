@@ -118,7 +118,7 @@
         <dependency>
             <groupId>com.github.Bowtie8904</groupId>
             <artifactId>BtCommons</artifactId>
-            <version>4de7c57</version>
+            <version>b3b2b81</version>
         </dependency>
     </dependencies>
 </project>

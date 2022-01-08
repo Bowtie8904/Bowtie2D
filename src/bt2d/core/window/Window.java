@@ -2,10 +2,16 @@ package bt2d.core.window;
 
 import bt.types.Killable;
 import bt.utils.Null;
+import bt2d.core.container.exc.GameContainerException;
+import bt2d.utils.log.glfw.DefaultGLFWErrorCallback;
+import bt2d.utils.log.lwjgl.DefaultLWJGLDebugOutputStream;
+import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 
+import java.io.PrintStream;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -119,6 +125,15 @@ public class Window implements Killable
      */
     public Window(int width, int height, String title, boolean fullScreen, boolean undecorated, boolean strictAspectRatio, int refreshRate)
     {
+        // set logging callbacks
+        Configuration.DEBUG_STREAM.set(createLWJGLDebugPrintStream());
+        GLFWErrorCallback.create(createGLFWErrorCallback()).set();
+
+        if (!glfwInit())
+        {
+            throw new GameContainerException("Unable to initialize GLFW");
+        }
+
         if (width <= 0)
         {
             throw new IllegalArgumentException("Width has to be above 0");
@@ -169,7 +184,36 @@ public class Window implements Killable
             yPos = (videoMode.height() - height) / 2;
             glfwSetWindowPos(window, xPos, yPos);
         }
+    }
 
+    /**
+     * Creates a suitable {@link GLFWErrorCallback} instance.
+     * <p>
+     * This method is called during the constructor of this class and set as the active GLFW error callback.
+     *
+     * @return the glfw error callback. By default this is an instance of {@link DefaultGLFWErrorCallback}.
+     *
+     * @author Lukas Hartwig
+     * @since 06.01.2022
+     */
+    protected GLFWErrorCallback createGLFWErrorCallback()
+    {
+        return new DefaultGLFWErrorCallback();
+    }
+
+    /**
+     * Creates a suitable {@link PrintStream} instance.
+     * <p>
+     * This method is called during the constructor of this class and set as the active LWJGL debug printstream.
+     *
+     * @return the print stream. By default this is an instance of {@link PrintStream} with an outputstream of type {@link DefaultLWJGLDebugOutputStream}.
+     *
+     * @author Lukas Hartwig
+     * @since 06.01.2022
+     */
+    protected PrintStream createLWJGLDebugPrintStream()
+    {
+        return new PrintStream(new DefaultLWJGLDebugOutputStream());
     }
 
     /**

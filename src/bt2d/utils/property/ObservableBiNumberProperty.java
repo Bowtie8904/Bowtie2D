@@ -66,7 +66,7 @@ public class ObservableBiNumberProperty<T1 extends Number, T2 extends Number> ex
 
         this.value1 = newValue1;
         this.value2 = newValue2;
-        notifyListener(newValue1, newValue2);
+        notifyListeners(newValue1, newValue2);
     }
 
     /**

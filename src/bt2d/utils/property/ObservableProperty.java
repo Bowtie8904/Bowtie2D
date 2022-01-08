@@ -1,5 +1,7 @@
 package bt2d.utils.property;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -9,7 +11,7 @@ import java.util.function.Consumer;
  * Usage:
  * <pre>
  *     ObservableProperty< Boolean> myBool = new ObservableProperty<>(true);
- *     myBool.onChange((oldValue, newValue) -> System.out.println("Old value: " + oldValue + "  new value: " + newValue));
+ *     myBool.addChangeListener((oldValue, newValue) -> System.out.println("Old value: " + oldValue + "  new value: " + newValue));
  *     myBool.set(false);
  * </pre>
  *
@@ -24,9 +26,9 @@ public class ObservableProperty<T>
     protected T value;
 
     /**
-     * The change listener that will be notified when the {@link #set(Object) set} method is called.
+     * The list of change listeners that will be notified when the {@link #set(Object) set} method is called.
      */
-    protected BiConsumer<T, T> onChange;
+    protected List<BiConsumer<T, T>> onChangeListeners;
 
     /**
      * Indicates whether the value of this property have to be non-null.
@@ -43,6 +45,7 @@ public class ObservableProperty<T>
      */
     public ObservableProperty(T value)
     {
+        this();
         set(value);
     }
 
@@ -54,6 +57,7 @@ public class ObservableProperty<T>
      */
     public ObservableProperty()
     {
+        this.onChangeListeners = new ArrayList<>();
     }
 
     /**
@@ -71,7 +75,7 @@ public class ObservableProperty<T>
         checkNonNull(newValue);
 
         this.value = newValue;
-        notifyListener(newValue);
+        notifyListeners(newValue);
     }
 
     /**
@@ -91,18 +95,21 @@ public class ObservableProperty<T>
     }
 
     /**
-     * Notifies the set listener (if there is any) and passes the new value.
+     * Notifies the set listeners (if there are any) and passes the new value.
      *
      * @param newValue the new value
      *
      * @author Lukas Hartwig
      * @since 07.11.2021
      */
-    protected void notifyListener(T newValue)
+    protected void notifyListeners(T newValue)
     {
-        if (this.onChange != null)
+        if (this.onChangeListeners != null)
         {
-            this.onChange.accept(this.value, newValue);
+            for (var listener : this.onChangeListeners)
+            {
+                listener.accept(this.value, newValue);
+            }
         }
     }
 
@@ -120,29 +127,32 @@ public class ObservableProperty<T>
     }
 
     /**
-     * Sets a listener which will be notified about changes of this properties value.
+     * Adds a listener which will be notified about changes of this properties value.
      *
      * @param onChange A BiConsumer whichs first argument will be the old value and whichs second argument will be the new value.
      *
      * @author Lukas Hartwig
      * @since 01.11.2021
      */
-    public void onChange(BiConsumer<T, T> onChange)
+    public void addChangeListener(BiConsumer<T, T> onChange)
     {
-        this.onChange = onChange;
+        if (this.onChangeListeners != null)
+        {
+            this.onChangeListeners.add(onChange);
+        }
     }
 
     /**
-     * Sets a listener which will be notified about changes of this properties value.
+     * Adds a listener which will be notified about changes of this properties value.
      *
      * @param onChange A Consumer whichs argument will be the new value.
      *
      * @author Lukas Hartwig
      * @since 01.11.2021
      */
-    public void onChange(Consumer<T> onChange)
+    public void addChangeListener(Consumer<T> onChange)
     {
-        onChange((oldValue, newValue) -> onChange.accept(newValue));
+        addChangeListener((oldValue, newValue) -> onChange.accept(newValue));
     }
 
     /**

@@ -1,9 +1,11 @@
 package bt2d.core.container.settings;
 
+import bt.log.Log;
 import bt2d.utils.property.ObservableBiNumberProperty;
 import bt2d.utils.property.ObservableBiProperty;
 import bt2d.utils.property.ObservableNumberProperty;
 import bt2d.utils.property.ObservableProperty;
+import org.lwjgl.system.Configuration;
 
 /**
  * The settings of a game container.
@@ -58,6 +60,11 @@ public class GameContainerSettings
     private ObservableNumberProperty<Double> gameUnitWidth;
 
     /**
+     * Indicates whether additional debug logging should be done by LWJGL.
+     */
+    private ObservableProperty<Boolean> lwjglDebugLogging;
+
+    /**
      * Instantiates a new Game container settings.
      * <p>
      * Default values will be set for the properties.
@@ -70,28 +77,59 @@ public class GameContainerSettings
         this.windowSize = new ObservableBiNumberProperty<>(0, 0);
         this.windowSize.nonNull();
         this.windowSize.range(1, Integer.MAX_VALUE);
+        this.windowSize.addChangeListener((oldWidth, newWidth, oldHeight, newHeight) -> {
+            Log.debug("WindowSize setting changed. width: {} -> {}. height: {} -> {}", oldWidth, newWidth, oldHeight, newHeight);
+        });
 
         this.title = new ObservableProperty<>("Title");
         this.title.nonNull();
+        this.title.addChangeListener((oldValue, newValue) -> {
+            Log.debug("Title setting changed: {} -> {}", oldValue, newValue);
+        });
 
         this.gameUnitWidth = new ObservableNumberProperty<>(100.0);
         this.gameUnitWidth.nonNull();
         this.gameUnitWidth.range(1.0, Double.MAX_VALUE);
+        this.gameUnitWidth.addChangeListener((oldValue, newValue) -> {
+            Log.debug("GameUnitWidth setting changed: {} -> {}", oldValue, newValue);
+        });
 
         this.undecorated = new ObservableProperty<>(false);
         this.undecorated.nonNull();
+        this.undecorated.addChangeListener((oldValue, newValue) -> {
+            Log.debug("Undecorated setting changed: {} -> {}", oldValue, newValue);
+        });
 
         this.fullscreen = new ObservableProperty<>(false);
         this.fullscreen.nonNull();
+        this.fullscreen.addChangeListener((oldValue, newValue) -> {
+            Log.debug("Fullscreen setting changed: {} -> {}", oldValue, newValue);
+        });
 
         this.maximize = new ObservableProperty<>(false);
         this.maximize.nonNull();
+        this.maximize.addChangeListener((oldValue, newValue) -> {
+            Log.debug("Maximize setting changed: {} -> {}", oldValue, newValue);
+        });
 
         this.strictAspectRatio = new ObservableProperty<>(true);
         this.strictAspectRatio.nonNull();
+        this.strictAspectRatio.addChangeListener((oldValue, newValue) -> {
+            Log.debug("StrictAspectRatio setting changed: {} -> {}", oldValue, newValue);
+        });
 
         this.debugRendering = new ObservableProperty<>(false);
         this.debugRendering.nonNull();
+        this.debugRendering.addChangeListener((oldValue, newValue) -> {
+            Log.debug("DebugRendering setting changed: {} -> {}", oldValue, newValue);
+        });
+
+        this.lwjglDebugLogging = new ObservableProperty<>(false);
+        this.lwjglDebugLogging.nonNull();
+        this.lwjglDebugLogging.addChangeListener((oldValue, newValue) -> {
+            Configuration.DEBUG.set(newValue);
+            Log.debug("LWJGLDebugLogging setting changed: {} -> {}", oldValue, newValue);
+        });
     }
 
     /**
@@ -333,6 +371,35 @@ public class GameContainerSettings
     public GameContainerSettings setDebugRendering(boolean debugRendering)
     {
         this.debugRendering.set(debugRendering);
+        return this;
+    }
+
+    /**
+     * Indicates whether additional debug logging should be done by LWJGL.
+     *
+     * @return true if additional logging should be done, false otherwise.
+     *
+     * @author Lukas Hartwig
+     * @since 06.01.2022
+     */
+    public ObservableProperty<Boolean> getLWJGLDebugLogging()
+    {
+        return this.lwjglDebugLogging;
+    }
+
+    /**
+     * Sets whether additional debug logging should be done by LWJGL.
+     *
+     * @param debugLogging true if additional logging should be done, false otherwise.
+     *
+     * @return This instance for chaining.
+     *
+     * @author Lukas Hartwig
+     * @since 06.01.2022
+     */
+    public GameContainerSettings setLWJGLDebugLogging(boolean debugLogging)
+    {
+        this.lwjglDebugLogging.set(debugLogging);
         return this;
     }
 }
