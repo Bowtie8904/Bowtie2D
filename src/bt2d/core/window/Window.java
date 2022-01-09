@@ -2,7 +2,7 @@ package bt2d.core.window;
 
 import bt.types.Killable;
 import bt.utils.Null;
-import bt2d.core.container.exc.GameContainerException;
+import bt2d.core.window.exc.WindowException;
 import bt2d.utils.log.glfw.DefaultGLFWErrorCallback;
 import bt2d.utils.log.lwjgl.DefaultLWJGLDebugOutputStream;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -131,7 +131,7 @@ public class Window implements Killable
 
         if (!glfwInit())
         {
-            throw new GameContainerException("Unable to initialize GLFW");
+            throw new WindowException("Unable to initialize GLFW");
         }
 
         if (width <= 0)
@@ -170,7 +170,7 @@ public class Window implements Killable
         if (window == 0)
         {
             shouldClose = true;
-            throw new IllegalStateException("Unable to create Window");
+            throw new WindowException("Unable to create Window");
         }
 
         glfwMakeContextCurrent(this.window);
