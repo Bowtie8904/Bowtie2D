@@ -120,8 +120,10 @@ public class ObservableNumberProperty<T extends Number> extends ObservableProper
         checkMinBounds(newValue);
         checkMaxBounds(newValue);
 
+        T oldValue = this.value;
+
         this.value = newValue;
-        notifyListeners(newValue);
+        notifyListeners(oldValue, newValue);
     }
 
     /**

@@ -64,9 +64,12 @@ public class ObservableBiNumberProperty<T1 extends Number, T2 extends Number> ex
         checkMinBounds(newValue1, newValue2);
         checkMaxBounds(newValue1, newValue2);
 
+        T1 oldValue1 = this.value1;
+        T2 oldValue2 = this.value2;
+
         this.value1 = newValue1;
         this.value2 = newValue2;
-        notifyListeners(newValue1, newValue2);
+        notifyListeners(oldValue1, newValue1, oldValue2, newValue2);
     }
 
     /**

@@ -85,27 +85,32 @@ public class ObservableBiProperty<T1, T2>
     {
         checkNonNull(newValue1, newValue2);
 
+        T1 oldValue1 = this.value1;
+        T2 oldValue2 = this.value2;
+
         this.value1 = newValue1;
         this.value2 = newValue2;
-        notifyListeners(newValue1, newValue2);
+        notifyListeners(oldValue1, newValue1, oldValue2, newValue2);
     }
 
     /**
      * Notifies the set listeners (if there are any) and passes the new values.
      *
+     * @param oldValue1 the old value 1
      * @param newValue1 the new value 1
+     * @param oldValue2 the old value 2
      * @param newValue2 the new value 2
      *
      * @author Lukas Hartwig
      * @since 07.11.2021
      */
-    protected void notifyListeners(T1 newValue1, T2 newValue2)
+    protected void notifyListeners(T1 oldValue1, T1 newValue1, T2 oldValue2, T2 newValue2)
     {
         if (this.onChangeListeners != null)
         {
             for (var listener : this.onChangeListeners)
             {
-                listener.accept(this.value1, newValue1, this.value2, newValue2);
+                listener.accept(oldValue1, newValue1, oldValue2, newValue2);
             }
         }
     }
