@@ -74,8 +74,10 @@ public class ObservableProperty<T>
     {
         checkNonNull(newValue);
 
+        T oldValue = this.value;
+
         this.value = newValue;
-        notifyListeners(newValue);
+        notifyListeners(oldValue, newValue);
     }
 
     /**
@@ -97,18 +99,19 @@ public class ObservableProperty<T>
     /**
      * Notifies the set listeners (if there are any) and passes the new value.
      *
+     * @param oldValue the old value
      * @param newValue the new value
      *
      * @author Lukas Hartwig
      * @since 07.11.2021
      */
-    protected void notifyListeners(T newValue)
+    protected void notifyListeners(T oldValue, T newValue)
     {
         if (this.onChangeListeners != null)
         {
             for (var listener : this.onChangeListeners)
             {
-                listener.accept(this.value, newValue);
+                listener.accept(oldValue, newValue);
             }
         }
     }

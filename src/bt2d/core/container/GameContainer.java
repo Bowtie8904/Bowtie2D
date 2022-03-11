@@ -15,6 +15,8 @@ import bt2d.core.scene.obj.ScenePair;
 import bt2d.core.window.Window;
 import bt2d.resource.load.exc.LoadException;
 import bt2d.utils.Unit;
+import bt2d.utils.render.Color;
+import bt2d.utils.render.ShapeRenderer;
 import bt2d.utils.timer.TimerActions;
 
 import java.util.HashMap;
@@ -22,7 +24,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glOrtho;
 
 /**
  * The core of a game.
@@ -301,40 +304,29 @@ public class GameContainer implements Runnable, Killable
         }
 
         // TODO remove test rendering
-        glColor4f(0, 0, 1, 0);
 
-        glBegin(GL_LINES);
-        glVertex3f(0, 0, 0);
-        glVertex3f((float)getWidth().divideBy(2).glUnits(), (float)getHeight().divideBy(2).glUnits(), 0);
-        glEnd();
+        ShapeRenderer.line(Unit.zero(), Unit.zero(),
+                           getWidth().divideBy(2), getHeight().divideBy(2),
+                           Color.BLUE);
 
-        glBegin(GL_LINES);
-        glVertex3f((float)getWidth().glUnits(), 0, 0);
-        glVertex3f((float)getWidth().divideBy(2).glUnits(), (float)getHeight().divideBy(2).glUnits(), 0);
-        glEnd();
+        ShapeRenderer.line(getWidth(), Unit.zero(),
+                           getWidth().divideBy(2), getHeight().divideBy(2),
+                           Color.BLUE);
 
-        glBegin(GL_LINES);
-        glVertex3f((float)getWidth().divideBy(2).glUnits(), (float)getHeight().divideBy(2).glUnits(), 0);
-        glVertex3f((float)getWidth().divideBy(2).glUnits(), (float)getHeight().glUnits(), 0);
-        glEnd();
+        ShapeRenderer.line(getWidth().divideBy(2), getHeight().divideBy(2),
+                           getWidth().divideBy(2), getHeight(),
+                           Color.BLUE);
 
-        glColor4f(1, 0, 0, 0);
+        ShapeRenderer.fillRectangle(getWidth().divideBy(3),
+                                    getHeight().divideBy(2),
+                                    getWidth().divideBy(2).subtractGameUnits(getWidth().divideBy(3)),
+                                    getHeight().divideBy(3).subtractGameUnits(getHeight().divideBy(2)),
+                                    Color.YELLOW);
 
-        glBegin(GL_QUADS);
-        glVertex3d(getWidth().divideBy(3).glUnits(), getHeight().divideBy(2).glUnits(), 0);
-        glVertex3d(getWidth().divideBy(3).glUnits(), getHeight().divideBy(3).glUnits(), 0);
-        glVertex3d(getWidth().divideBy(2).glUnits(), getHeight().divideBy(3).glUnits(), 0);
-        glVertex3d(getWidth().divideBy(2).glUnits(), getHeight().divideBy(2).glUnits(), 0);
-        glEnd();
+        ShapeRenderer.fillRectangle(10, 10, 5, 5);
+        ShapeRenderer.drawRectangle(9, 9, 7, 7, Color.RED);
 
-        glColor4f(0, 1, 0, 0);
-
-        glBegin(GL_QUADS);
-        glVertex3d(Unit.forGameUnits(10).glUnits(), Unit.forGameUnits(10).glUnits(), 0);
-        glVertex3d(Unit.forGameUnits(15).glUnits(), Unit.forGameUnits(10).glUnits(), 0);
-        glVertex3d(Unit.forGameUnits(10).glUnits(), Unit.forGameUnits(15).glUnits(), 0);
-        glVertex3d(Unit.forGameUnits(15).glUnits(), Unit.forGameUnits(15).glUnits(), 0);
-        glEnd();
+        ShapeRenderer.fillRectangle(70, 20, 8, 15, new Color("#4e9962"));
 
         this.window.afterRender();
     }

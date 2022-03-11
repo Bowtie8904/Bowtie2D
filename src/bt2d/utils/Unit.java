@@ -4,7 +4,7 @@ package bt2d.utils;
  * A measurement conversion class between OpenGL units and custom game units. This class uses a set ratio of OpenGl units per game unit
  * to do its calculations.
  * <p>
- * Goal of this class is to allow rendring objects with the same relative size no matter what size the window has.
+ * Goal of this class is to allow rendering objects with the same relative size no matter what size the window has.
  *
  * @author Lukas Hartwig
  * @since 01.11.2021
